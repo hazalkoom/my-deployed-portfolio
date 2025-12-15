@@ -682,9 +682,11 @@ Today, I channel that passion into building the powerful backends that drive mod
               <h3>Get In Touch</h3>
               <p>Please fill out the form below to send me a message.</p>
 
-              <form id="contact-form" name="contact" method="post" action="/" data-netlify="true" data-netlify-honeypot="bot-field" class="php-email-form">
+              <form id="contact-form" name="contact" method="post" action="/" netlify data-netlify="true" data-netlify-honeypot="bot-field" class="php-email-form">
                 <input type="hidden" name="form-name" value="contact">
-                <input type="hidden" name="bot-field">
+                <p class="d-none">
+                  <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+                </p>
                 <div class="row gy-4">
 
                   <div class="col-md-6">
