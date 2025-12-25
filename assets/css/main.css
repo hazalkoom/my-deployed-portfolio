@@ -57,6 +57,10 @@ body {
   overflow-x: hidden;
 }
 
+body.nav-open {
+  overflow: hidden;
+}
+
 a {
   color: var(--accent-color);
   text-decoration: none;
@@ -283,6 +287,83 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulse 2s infinite;
 }
 
+.mobile-header-toggle {
+  color: var(--contrast-color);
+  background: var(--gradient-primary);
+  font-size: 24px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  transition: all var(--animation-duration) var(--animation-timing);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Dedicated Mobile Drawer Nav (phones/tablets) */
+#mobile-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(340px, 88vw);
+  transform: translateX(110%);
+  transition: transform 0.25s ease;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+#mobile-nav.active {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+#mobile-nav .mobile-nav-inner {
+  height: 100%;
+  padding: 18px 16px 16px 16px;
+  background: linear-gradient(135deg, #1a1f35 0%, #0f1425 100%);
+  border-left: 1px solid rgba(99, 102, 241, 0.25);
+  overflow-y: auto;
+}
+
+#mobile-nav .mobile-nav-close {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--gradient-primary);
+  color: var(--contrast-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+}
+
+/* Make the cloned nav look good inside the drawer */
+#mobile-nav #mobile-navmenu a {
+  margin-bottom: 6px;
+}
+
+/* Prevent the desktop sidebar from interfering on mobile: keep it off-canvas */
+@media (max-width: 1199px) {
+  .header.header-show {
+    left: -100%;
+  }
+}
+
+.mobile-header-toggle:hover {
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+}
+
 .header .header-toggle:hover {
   transform: rotate(90deg) scale(1.1);
   box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
@@ -299,11 +380,41 @@ h1, h2, h3, h4, h5, h6 {
   .header {
     left: -100%;
   }
+
+  /* Use the always-visible mobile toggle outside the off-canvas sidebar */
+  .header .header-toggle {
+    display: none;
+  }
+
+  .mobile-header-toggle {
+    display: flex;
+  }
 }
 
 .header.header-show {
   left: 0;
   animation: slideInLeft 0.4s var(--animation-timing);
+}
+
+@media (max-width: 1199px) {
+  .header.header-show {
+    left: -100% !important;
+  }
+}
+
+#nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 998;
+}
+
+#nav-backdrop.active {
+  opacity: 1;
+  visibility: visible;
 }
 
 /*--------------------------------------------------------------
@@ -1416,3 +1527,73 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 992px) {
+  .hero .hero-actions {
+    justify-content: center;
+  }
+
+  .about .profile-card {
+    padding: 2rem;
+  }
+
+  .about .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero .hero-text h1 {
+    font-size: 38px;
+  }
+
+  .hero .hero-text h2 {
+    font-size: 24px;
+  }
+
+  .hero .hero-text .lead {
+    font-size: 20px;
+  }
+
+  .hero .hero-actions {
+    gap: 12px;
+  }
+
+  .hero .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 22px;
+  }
+
+  .hero .hero-visual .profile-container {
+    width: 260px;
+    height: 260px;
+    margin: 0 auto;
+  }
+
+  .portfolio .project-img-container {
+    height: 200px;
+  }
+
+  .about .profile-card {
+    padding: 1.5rem;
+  }
+
+  .about .profile-header .profile-image {
+    width: 140px;
+    height: 140px;
+  }
+
+  .about .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 1.5rem;
+  }
+
+  .contact .info-box,
+  .contact .contact-form {
+    padding: 1.75rem;
+  }
+}
+

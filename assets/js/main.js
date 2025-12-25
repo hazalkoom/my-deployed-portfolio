@@ -9,22 +9,165 @@
   /**
    * Header toggle with smooth animation
    */
-  const headerToggleBtn = document.querySelector('.header-toggle');
+  const headerToggleBtnInHeader = document.querySelector('#header .header-toggle');
+  const headerEl = document.querySelector('#header');
+  const body = document.body;
+
+  const NAV_OPEN_CLASS = 'nav-open';
+  const BACKDROP_ID = 'nav-backdrop';
+  const MOBILE_NAV_ID = 'mobile-nav';
+  const MOBILE_NAV_ACTIVE_CLASS = 'mobile-nav-active';
+
+  function isMobileNav() {
+    return window.matchMedia('(max-width: 1199px)').matches;
+  }
+
+  function ensureMobileToggle() {
+    let mobileToggle = document.querySelector('.mobile-header-toggle');
+    if (mobileToggle) return mobileToggle;
+
+    mobileToggle = document.createElement('button');
+    mobileToggle.type = 'button';
+    mobileToggle.className = 'mobile-header-toggle bi bi-list';
+    mobileToggle.setAttribute('aria-label', 'Open menu');
+    document.body.appendChild(mobileToggle);
+    return mobileToggle;
+  }
+
+  const mobileToggleBtn = ensureMobileToggle();
+
+  function ensureNavBackdrop() {
+    let backdrop = document.getElementById(BACKDROP_ID);
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement('div');
+    backdrop.id = BACKDROP_ID;
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(backdrop);
+
+    backdrop.addEventListener('click', () => {
+      if (body.classList.contains(NAV_OPEN_CLASS)) {
+        if (isMobileNav()) {
+          closeMobileNav();
+        } else {
+          headerToggle();
+        }
+      }
+    });
+
+    return backdrop;
+  }
+
+  function ensureMobileNav() {
+    let mobileNav = document.getElementById(MOBILE_NAV_ID);
+    if (mobileNav) return mobileNav;
+
+    const sourceNav = document.querySelector('#navmenu');
+    if (!sourceNav) return null;
+
+    mobileNav = document.createElement('div');
+    mobileNav.id = MOBILE_NAV_ID;
+    mobileNav.setAttribute('aria-hidden', 'true');
+
+    const inner = document.createElement('div');
+    inner.className = 'mobile-nav-inner';
+
+    const navClone = sourceNav.cloneNode(true);
+    navClone.id = 'mobile-navmenu';
+
+    inner.appendChild(navClone);
+    mobileNav.appendChild(inner);
+    document.body.appendChild(mobileNav);
+
+    // Close when clicking a link
+    mobileNav.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => {
+        closeMobileNav();
+      });
+    });
+
+    return mobileNav;
+  }
+
+  function openMobileNav() {
+    const mobileNav = ensureMobileNav();
+    if (!mobileNav) return;
+
+    body.classList.add(NAV_OPEN_CLASS);
+    body.classList.add(MOBILE_NAV_ACTIVE_CLASS);
+    ensureNavBackdrop().classList.add('active');
+    mobileNav.classList.add('active');
+    mobileNav.setAttribute('aria-hidden', 'false');
+
+    mobileToggleBtn.classList.remove('bi-list');
+    mobileToggleBtn.classList.add('bi-x');
+    mobileToggleBtn.setAttribute('aria-label', 'Close menu');
+  }
+
+  function closeMobileNav() {
+    const mobileNav = document.getElementById(MOBILE_NAV_ID);
+
+    body.classList.remove(NAV_OPEN_CLASS);
+    body.classList.remove(MOBILE_NAV_ACTIVE_CLASS);
+    const backdrop = document.getElementById(BACKDROP_ID);
+    if (backdrop) backdrop.classList.remove('active');
+
+    if (mobileNav) {
+      mobileNav.classList.remove('active');
+      mobileNav.setAttribute('aria-hidden', 'true');
+    }
+
+    mobileToggleBtn.classList.remove('bi-x');
+    mobileToggleBtn.classList.add('bi-list');
+    mobileToggleBtn.setAttribute('aria-label', 'Open menu');
+  }
 
   function headerToggle() {
-    document.querySelector('#header').classList.toggle('header-show');
-    headerToggleBtn.classList.toggle('bi-list');
-    headerToggleBtn.classList.toggle('bi-x');
+    if (isMobileNav()) {
+      if (body.classList.contains(NAV_OPEN_CLASS)) {
+        closeMobileNav();
+      } else {
+        openMobileNav();
+      }
+      return;
+    }
+
+    if (!headerEl || !headerToggleBtnInHeader) return;
+
+    headerEl.classList.toggle('header-show');
+    headerToggleBtnInHeader.classList.toggle('bi-list');
+    headerToggleBtnInHeader.classList.toggle('bi-x');
+
+    const isOpen = headerEl.classList.contains('header-show');
+    body.classList.toggle(NAV_OPEN_CLASS, isOpen);
+    ensureNavBackdrop().classList.toggle('active', isOpen);
     
     // Add rotation animation
-    headerToggleBtn.style.transform = headerToggleBtn.classList.contains('bi-x') 
+    headerToggleBtnInHeader.style.transform = headerToggleBtnInHeader.classList.contains('bi-x') 
       ? 'rotate(90deg) scale(1.1)' 
       : 'rotate(0deg) scale(1)';
   }
   
-  if (headerToggleBtn) {
-    headerToggleBtn.addEventListener('click', headerToggle);
+  // Mobile toggle always available
+  if (mobileToggleBtn) {
+    mobileToggleBtn.addEventListener('click', headerToggle);
   }
+
+  // Desktop toggle remains inside header
+  if (headerToggleBtnInHeader) {
+    headerToggleBtnInHeader.addEventListener('click', headerToggle);
+  }
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!body.classList.contains(NAV_OPEN_CLASS)) return;
+    if (isMobileNav()) {
+      closeMobileNav();
+    } else {
+      headerToggle();
+    }
+  });
 
   /**
    * Hide mobile nav on same-page/hash links
