@@ -6,6 +6,14 @@
 (function() {
   "use strict";
 
+  function runWhenDomReady(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn, { once: true });
+    } else {
+      fn();
+    }
+  }
+
   /**
    * Lenis + GSAP ScrollTrigger integration
    */
@@ -153,9 +161,11 @@
   /**
    * Spline background + noise overlay
    */
-  (function initBackgroundLayers() {
+  function initBackgroundLayers() {
     const SPLINE_CODE_URL = 'assets/spline/scene.splinecode';
     const SPLINE_RUNTIME_URL = 'https://unpkg.com/@splinetool/runtime@1.9.57/build/runtime.js';
+
+    if (!document.body) return;
 
     // Create Spline background container (behind everything)
     if (!document.getElementById('spline-bg')) {
@@ -240,6 +250,9 @@
     const loadingFillEl = loadingScreen ? loadingScreen.querySelector('.loading-bar-fill') : null;
 
     const loadingState = { p: 0, done: false };
+    let progressRaf = 0;
+    let progressStart = 0;
+    let lastProgressPaint = 0;
     function setLoadingProgress(p) {
       const clamped = Math.max(0, Math.min(100, Math.round(p)));
       loadingState.p = clamped;
@@ -257,30 +270,50 @@
       if (!loadingScreen || loadingState.done) return;
       loadingState.done = true;
 
+      if (progressRaf) {
+        cancelAnimationFrame(progressRaf);
+        progressRaf = 0;
+      }
+
       // Ensure it reaches 100%
       const finish = () => {
         loadingScreen.classList.add('hidden');
       };
 
       if (typeof gsap !== 'undefined') {
-        gsap.to(loadingState, {
-          p: 100,
-          duration: 0.4,
-          ease: 'power2.out',
-          onUpdate: () => setLoadingProgress(loadingState.p),
-          onComplete: () => {
-            gsap.to(loadingScreen, {
-              opacity: 0,
-              duration: 0.6,
-              ease: 'power3.out',
-              onComplete: finish
-            });
-          }
-        });
+        gsap.to(loadingState, { p: 100, duration: 0.35, ease: 'power2.out', onUpdate: () => setLoadingProgress(loadingState.p) });
+        gsap.to(loadingScreen, { opacity: 0, duration: 0.55, ease: 'power3.out', onComplete: finish });
       } else {
         setLoadingProgress(100);
         finish();
       }
+    }
+
+    function startProgressLoop() {
+      if (!loadingScreen || loadingState.done) return;
+      if (progressRaf) return;
+      progressStart = performance.now();
+      lastProgressPaint = 0;
+
+      const tick = (t) => {
+        if (loadingState.done) {
+          progressRaf = 0;
+          return;
+        }
+
+        const elapsed = t - progressStart;
+        const target = Math.min(92, (elapsed / 2200) * 92);
+
+        // Throttle DOM writes a bit to avoid UI jank on low-end devices.
+        if (t - lastProgressPaint > 50) {
+          setLoadingProgress(target);
+          lastProgressPaint = t;
+        }
+
+        progressRaf = requestAnimationFrame(tick);
+      };
+
+      progressRaf = requestAnimationFrame(tick);
     }
     function showLoading() {
       if (!loadingEl) return;
@@ -329,6 +362,7 @@
       started = true;
       showLoading();
       showLoadingScreen();
+      startProgressLoop();
 
       if (window.location && window.location.protocol === 'file:') {
         console.error('[Spline] Cannot load .splinecode from file://. Please run the site via a local server (e.g. VS Code Live Server).');
@@ -401,26 +435,6 @@
           markLoaded();
         });
 
-      // Fake progress (Spline runtime doesn't expose progress). Keeps it premium.
-      // Approach: quickly ramp to 92% then wait for load.
-      if (typeof gsap !== 'undefined') {
-        gsap.to(loadingState, {
-          p: 92,
-          duration: 2.2,
-          ease: 'power2.out',
-          onUpdate: () => {
-            if (!loadingState.done) setLoadingProgress(loadingState.p);
-          }
-        });
-      } else {
-        let p = 0;
-        const id = window.setInterval(() => {
-          if (loadingState.done) return window.clearInterval(id);
-          p = Math.min(92, p + 2);
-          setLoadingProgress(p);
-        }, 80);
-      }
-
       // Safety timeout so we don't leave spinner forever.
       window.setTimeout(() => {
         if (!document.body.classList.contains('spline-loaded')) {
@@ -441,7 +455,8 @@
     window.addEventListener('keydown', kick, { once: true });
 
     // Scroll-based transforms can be added via Spline runtime objects once we know the target names.
-  })();
+  }
+  runWhenDomReady(initBackgroundLayers);
 
   /**
    * Header toggle with smooth animation
@@ -692,27 +707,32 @@
   if (selectTyped) {
     let typed_strings = selectTyped.getAttribute('data-typed-items');
     typed_strings = typed_strings.split(',');
-    new Typed('.typed', {
-      strings: typed_strings,
-      loop: true,
-      typeSpeed: 80,
-      backSpeed: 40,
-      backDelay: 2000,
-      cursorChar: '|',
-      smartBackspace: true
-    });
+    if (typeof Typed !== 'undefined') {
+      new Typed('.typed', {
+        strings: typed_strings,
+        loop: true,
+        typeSpeed: 80,
+        backSpeed: 40,
+        backDelay: 2000,
+        cursorChar: '|',
+        smartBackspace: true
+      });
+    }
   }
 
   /**
    * Enhanced Pure Counter
    */
-  new PureCounter();
+  if (typeof PureCounter !== 'undefined') {
+    new PureCounter();
+  }
 
   /**
    * Enhanced skills animation with stagger
    */
   let skillsAnimation = document.querySelectorAll('.skills-animation');
   skillsAnimation.forEach((item, index) => {
+    if (typeof Waypoint === 'undefined') return;
     new Waypoint({
       element: item,
       offset: '80%',
@@ -731,23 +751,26 @@
   /**
    * Enhanced GLightbox
    */
-  const glightbox = GLightbox({
-    selector: '.glightbox',
-    touchNavigation: true,
-    loop: true,
-    autoplayVideos: true,
-    openEffect: 'zoom',
-    closeEffect: 'fade',
-    cssEfects: {
-      fade: { in: 'fadeIn', out: 'fadeOut' },
-      zoom: { in: 'zoomIn', out: 'zoomOut' }
-    }
-  });
+  if (typeof GLightbox !== 'undefined') {
+    GLightbox({
+      selector: '.glightbox',
+      touchNavigation: true,
+      loop: true,
+      autoplayVideos: true,
+      openEffect: 'zoom',
+      closeEffect: 'fade',
+      cssEfects: {
+        fade: { in: 'fadeIn', out: 'fadeOut' },
+        zoom: { in: 'zoomIn', out: 'zoomOut' }
+      }
+    });
+  }
 
   /**
    * Enhanced Isotope with smooth transitions
    */
   document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
+    if (typeof imagesLoaded === 'undefined' || typeof Isotope === 'undefined') return;
     let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
     let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
     let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
@@ -789,6 +812,7 @@
    * Enhanced Swiper initialization
    */
   function initSwiper() {
+    if (typeof Swiper === 'undefined') return;
     document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
       let config = JSON.parse(
         swiperElement.querySelector(".swiper-config").innerHTML.trim()
@@ -952,10 +976,11 @@
   /**
    * Add cursor follower effect (optional - modern touch)
    */
-  (function initLiquidCursor() {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (prefersReducedMotion || !hasFinePointer) return;
+  function initLiquidCursor() {
+    try {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      if (prefersReducedMotion || !hasFinePointer) return;
 
     const trailCanvas = document.createElement('canvas');
     trailCanvas.id = 'star-trail-canvas';
@@ -993,12 +1018,12 @@
     let xTo = null;
     let yTo = null;
     let scaleTo = null;
-    if (typeof gsap !== 'undefined') {
-      // Slower, heavier inertia
-      xTo = gsap.quickTo(state, 'x', { duration: 0.9, ease: 'power3.out' });
-      yTo = gsap.quickTo(state, 'y', { duration: 0.9, ease: 'power3.out' });
-      scaleTo = gsap.quickTo(state, 'scale', { duration: 0.18, ease: 'power3.out' });
-    }
+      if (typeof gsap !== 'undefined') {
+        // 2D vortex cursor: responsive but smooth
+        xTo = gsap.quickTo(state, 'x', { duration: 0.15, ease: 'power3.out' });
+        yTo = gsap.quickTo(state, 'y', { duration: 0.15, ease: 'power3.out' });
+        scaleTo = gsap.quickTo(state, 'scale', { duration: 0.15, ease: 'power3.out' });
+      }
 
     function onMove(e) {
       state.mx = e.clientX;
@@ -1010,7 +1035,9 @@
     }
     window.addEventListener('mousemove', onMove, { passive: true });
 
-    gsap && gsap.set && gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+      if (typeof gsap !== 'undefined' && typeof gsap.set === 'function') {
+        gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+      }
 
     function setHover(active) {
       state.hover = active;
@@ -1056,45 +1083,68 @@
 
     function syncSplineToMouse() {
       const app = window.__splineApp;
-      const objs = window.__splineObjects;
-      if (!app || !objs) return;
+      const splineObjects = window.__splineObjects;
+      if (!app || !splineObjects) return;
 
-      const nx = (state.x / window.innerWidth) * 2 - 1;
-      const ny = (state.y / window.innerHeight) * 2 - 1;
+      const screenNx = (state.x / window.innerWidth) * 2 - 1;
+      const screenNy = (state.y / window.innerHeight) * 2 - 1;
 
       // Wider range so it can hit edges; tuned by viewport.
       const xRange = Math.max(220, window.innerWidth / 2.2);
       const yRange = Math.max(160, window.innerHeight / 2.4);
 
-      const targetX = nx * xRange;
-      const targetY = -ny * yRange;
+      const targetX = screenNx * xRange;
+      const targetY = -screenNy * yRange;
 
-      // Slow cinematic physics + bounce on bounds
-      const follow = 0.02; // smaller = slower
-      splinePhys.vx += (targetX - splinePhys.x) * follow;
-      splinePhys.vy += (targetY - splinePhys.y) * follow;
-      splinePhys.vx *= 0.95;
-      splinePhys.vy *= 0.95;
+      // Extreme decoupling: 3D is always "chasing" from a distance.
+      const baseFollow = 0.004;
+      const dx = targetX - splinePhys.x;
+      const dy = targetY - splinePhys.y;
+      const dist = Math.hypot(dx, dy);
+
+      // Keep the 3D target behind the mouse direction by a dynamic offset.
+      const dirX = dist > 0.001 ? dx / dist : 0;
+      const dirY = dist > 0.001 ? dy / dist : 0;
+      const desiredGap = Math.max(40, Math.min(180, dist * 0.22));
+      const lagTargetX = targetX - dirX * desiredGap;
+      const lagTargetY = targetY - dirY * desiredGap;
+
+      // Distance-based delay: accelerate slightly more when far, but still very heavy.
+      const follow = baseFollow * Math.min(2.2, 0.65 + dist / Math.max(1, Math.max(xRange, yRange)) * 3.2);
+
+      splinePhys.vx += (lagTargetX - splinePhys.x) * follow;
+      splinePhys.vy += (lagTargetY - splinePhys.y) * follow;
+
+      // Heavy damping + soft bounce (less jitter on edges)
+      splinePhys.vx *= 0.985;
+      splinePhys.vy *= 0.985;
       splinePhys.x += splinePhys.vx;
       splinePhys.y += splinePhys.vy;
 
+      const bounce = -0.62;
+      const edgeSoftness = 0.12;
+
       if (splinePhys.x > xRange) {
+        const over = splinePhys.x - xRange;
         splinePhys.x = xRange;
-        splinePhys.vx *= -0.82;
+        splinePhys.vx = splinePhys.vx * bounce - over * edgeSoftness;
       } else if (splinePhys.x < -xRange) {
+        const over = -xRange - splinePhys.x;
         splinePhys.x = -xRange;
-        splinePhys.vx *= -0.82;
+        splinePhys.vx = splinePhys.vx * bounce + over * edgeSoftness;
       }
 
       if (splinePhys.y > yRange) {
+        const over = splinePhys.y - yRange;
         splinePhys.y = yRange;
-        splinePhys.vy *= -0.82;
+        splinePhys.vy = splinePhys.vy * bounce - over * edgeSoftness;
       } else if (splinePhys.y < -yRange) {
+        const over = -yRange - splinePhys.y;
         splinePhys.y = -yRange;
-        splinePhys.vy *= -0.82;
+        splinePhys.vy = splinePhys.vy * bounce + over * edgeSoftness;
       }
 
-      const ship = objs.shipTarget;
+      const ship = splineObjects.shipTarget;
       if (ship && ship.position) {
         ship.position.x = splinePhys.x;
         ship.position.y = splinePhys.y;
@@ -1105,7 +1155,7 @@
         ship.scale.z = 0.62;
       }
 
-      const stars = objs.starsTarget;
+      const stars = splineObjects.starsTarget;
       if (stars && stars.position) {
         stars.position.x = splinePhys.x * 0.85;
         stars.position.y = splinePhys.y * 0.85;
@@ -1114,9 +1164,9 @@
 
     function draw() {
       if (!xTo || !yTo) {
-        // Slower desktop lerp fallback
-        state.x += (state.mx - state.x) * 0.03;
-        state.y += (state.my - state.y) * 0.03;
+        // Responsive lerp fallback (when GSAP isn't present)
+        state.x += (state.mx - state.x) * 0.18;
+        state.y += (state.my - state.y) * 0.18;
       }
 
       cursor.style.transform = `translate(${state.x}px, ${state.y}px) translate(-50%, -50%) scale(${state.scale})`;
@@ -1149,8 +1199,12 @@
       requestAnimationFrame(draw);
     }
 
-    requestAnimationFrame(draw);
-  })();
+      requestAnimationFrame(draw);
+    } catch (e) {
+      // Fail silently to avoid breaking other pages
+    }
+  }
+  runWhenDomReady(initLiquidCursor);
 
   /**
    * Add gradient animation to text elements

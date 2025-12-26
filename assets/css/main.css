@@ -157,6 +157,10 @@ body.spline-loaded #canvas3d {
   transition: width 0.12s ease;
 }
 
+#preloader {
+  display: none !important;
+}
+
 #spline-loading.hidden {
   opacity: 0;
   visibility: hidden;
@@ -318,8 +322,8 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   border-radius: 999px;
   pointer-events: none;
   z-index: 10002;
@@ -338,7 +342,7 @@ h1, h2, h3, h4, h5, h6 {
 .vortex-cursor::after {
   content: '';
   position: absolute;
-  inset: -7px;
+  inset: -5px;
   border-radius: inherit;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.12), rgba(125, 211, 252, 0.08), transparent 65%);
   filter: blur(2px);
@@ -774,6 +778,13 @@ h1, h2, h3, h4, h5, h6 {
   padding: 50px 0;
   position: relative;
   border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+body.portfolio-details-page .footer,
+body.service-details-page .footer,
+body.starter-page-page .footer,
+html.portfolio-details-page .footer {
+  background: transparent !important;
 }
 
 .footer .copyright {
