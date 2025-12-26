@@ -7,6 +7,443 @@
   "use strict";
 
   /**
+   * Lenis + GSAP ScrollTrigger integration
+   */
+  let lenis = null;
+  try {
+    if (typeof Lenis !== 'undefined') {
+      lenis = new Lenis({
+        duration: 1.15,
+        easing: (t) => 1 - Math.pow(1 - t, 4),
+        smoothWheel: true,
+        smoothTouch: false,
+        wheelMultiplier: 1,
+        touchMultiplier: 1.5
+      });
+
+      // Keep ScrollTrigger in sync with Lenis
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Use Lenis as the scroller proxy
+        ScrollTrigger.scrollerProxy(document.documentElement, {
+          scrollTop(value) {
+            if (arguments.length) {
+              lenis.scrollTo(value, { immediate: true });
+            }
+            return window.scrollY || document.documentElement.scrollTop;
+          },
+          getBoundingClientRect() {
+            return {
+              top: 0,
+              left: 0,
+              width: window.innerWidth,
+              height: window.innerHeight
+            };
+          }
+        });
+
+        ScrollTrigger.refresh();
+      } else if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        // GSAP is present but Lenis isn't; still register plugin for future use.
+        gsap.registerPlugin(ScrollTrigger);
+      }
+    } else if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+    }
+  } catch (e) {
+    lenis = null;
+  }
+
+  function splitTextToChars(el) {
+    if (!el) return [];
+    if (el.dataset.gsapSplitDone === 'true') {
+      return Array.from(el.querySelectorAll('.gsap-char'));
+    }
+
+    const text = el.textContent ?? '';
+    el.dataset.gsapSplitDone = 'true';
+    el.dataset.gsapOriginalText = text;
+    el.textContent = '';
+
+    const frag = document.createDocumentFragment();
+    const chars = [];
+
+    for (const ch of Array.from(text)) {
+      if (ch === ' ') {
+        frag.appendChild(document.createTextNode(' '));
+        continue;
+      }
+      const span = document.createElement('span');
+      span.className = 'gsap-char';
+      span.textContent = ch;
+      frag.appendChild(span);
+      chars.push(span);
+    }
+
+    el.appendChild(frag);
+    return chars;
+  }
+
+  function initGsapScrollEffects() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    // Headings reveal per section
+    document.querySelectorAll('section').forEach((section) => {
+      const headings = section.querySelectorAll('.section-title h1, .section-title h2, .section-title h3, header h1, header h2, h1, h2');
+      if (!headings.length) return;
+
+      // Use the most relevant heading within the section
+      const heading = headings[0];
+      const chars = splitTextToChars(heading);
+      if (!chars.length) return;
+
+      gsap.fromTo(
+        chars,
+        { yPercent: 110, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: 'power3.out',
+          stagger: 0.02,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 78%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+
+      // Images parallax + scale scrub
+      const images = section.querySelectorAll('img');
+      images.forEach((img) => {
+        // Skip tiny icons/logos and UI glyphs
+        if (img.closest('.header') || img.closest('#mobile-nav')) return;
+
+        gsap.fromTo(
+          img,
+          { y: -18, scale: 1.06 },
+          {
+            y: 18,
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true
+            }
+          }
+        );
+      });
+    });
+
+    ScrollTrigger.refresh();
+  }
+
+  window.addEventListener('load', initGsapScrollEffects);
+
+  /**
+   * Spline background + noise overlay
+   */
+  (function initBackgroundLayers() {
+    const SPLINE_CODE_URL = 'assets/spline/scene.splinecode';
+    const SPLINE_RUNTIME_URL = 'https://unpkg.com/@splinetool/runtime@1.9.57/build/runtime.js';
+
+    // Create Spline background container (behind everything)
+    if (!document.getElementById('spline-bg')) {
+      const splineBg = document.createElement('div');
+      splineBg.id = 'spline-bg';
+      document.body.prepend(splineBg);
+    }
+
+    // Create canvas for Spline Runtime
+    if (!document.getElementById('canvas3d')) {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'canvas3d';
+      canvas.setAttribute('aria-hidden', 'true');
+      document.getElementById('spline-bg').appendChild(canvas);
+    }
+
+    // Create Spline loading overlay (prevents black screen while assets fetch)
+    if (!document.getElementById('spline-loading')) {
+      const loading = document.createElement('div');
+      loading.id = 'spline-loading';
+      loading.setAttribute('aria-hidden', 'true');
+
+      const spinner = document.createElement('div');
+      spinner.className = 'spline-spinner';
+      loading.appendChild(spinner);
+
+      document.body.appendChild(loading);
+    }
+
+    // Professional preloader screen
+    if (!document.getElementById('loading-screen')) {
+      const screen = document.createElement('div');
+      screen.id = 'loading-screen';
+
+      const inner = document.createElement('div');
+      inner.className = 'loading-inner';
+
+      const label = document.createElement('div');
+      label.className = 'loading-label';
+      label.textContent = 'Loading';
+
+      const percent = document.createElement('div');
+      percent.className = 'loading-percent';
+      percent.textContent = '0%';
+
+      const bar = document.createElement('div');
+      bar.className = 'loading-bar';
+      const fill = document.createElement('div');
+      fill.className = 'loading-bar-fill';
+      bar.appendChild(fill);
+
+      inner.appendChild(label);
+      inner.appendChild(percent);
+      inner.appendChild(bar);
+      screen.appendChild(inner);
+
+      document.body.appendChild(screen);
+    }
+
+    // Create noise overlay (above everything)
+    if (!document.getElementById('noise-overlay')) {
+      const noise = document.createElement('div');
+      noise.id = 'noise-overlay';
+      noise.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(noise);
+    }
+
+    // Create contrast overlay (between content and background)
+    if (!document.getElementById('contrast-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.id = 'contrast-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(overlay);
+    }
+
+    const canvas3d = document.getElementById('canvas3d');
+    if (!canvas3d) return;
+
+    const loadingEl = document.getElementById('spline-loading');
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingPercentEl = loadingScreen ? loadingScreen.querySelector('.loading-percent') : null;
+    const loadingFillEl = loadingScreen ? loadingScreen.querySelector('.loading-bar-fill') : null;
+
+    const loadingState = { p: 0, done: false };
+    function setLoadingProgress(p) {
+      const clamped = Math.max(0, Math.min(100, Math.round(p)));
+      loadingState.p = clamped;
+      if (loadingPercentEl) loadingPercentEl.textContent = clamped + '%';
+      if (loadingFillEl) loadingFillEl.style.width = clamped + '%';
+    }
+    setLoadingProgress(0);
+
+    function showLoadingScreen() {
+      if (!loadingScreen) return;
+      loadingScreen.classList.remove('hidden');
+    }
+
+    function hideLoadingScreen() {
+      if (!loadingScreen || loadingState.done) return;
+      loadingState.done = true;
+
+      // Ensure it reaches 100%
+      const finish = () => {
+        loadingScreen.classList.add('hidden');
+      };
+
+      if (typeof gsap !== 'undefined') {
+        gsap.to(loadingState, {
+          p: 100,
+          duration: 0.4,
+          ease: 'power2.out',
+          onUpdate: () => setLoadingProgress(loadingState.p),
+          onComplete: () => {
+            gsap.to(loadingScreen, {
+              opacity: 0,
+              duration: 0.6,
+              ease: 'power3.out',
+              onComplete: finish
+            });
+          }
+        });
+      } else {
+        setLoadingProgress(100);
+        finish();
+      }
+    }
+    function showLoading() {
+      if (!loadingEl) return;
+      loadingEl.classList.remove('hidden');
+    }
+    function hideLoading() {
+      if (!loadingEl) return;
+      loadingEl.classList.add('hidden');
+    }
+
+    function markLoaded() {
+      document.body.classList.add('spline-loaded');
+      hideLoading();
+      hideLoadingScreen();
+    }
+
+    function sizeSplineCanvas() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const w = Math.floor(window.innerWidth * dpr);
+      const h = Math.floor(window.innerHeight * dpr);
+      if (canvas3d.width !== w) canvas3d.width = w;
+      if (canvas3d.height !== h) canvas3d.height = h;
+    }
+
+    window.addEventListener('resize', sizeSplineCanvas);
+    sizeSplineCanvas();
+
+    async function getSplineApplicationCtor() {
+      // Prefer ESM import (runtime.js is typically ESM; classic <script> may not expose globals)
+      try {
+        const mod = await import(SPLINE_RUNTIME_URL);
+        if (mod && mod.Application) return mod.Application;
+      } catch (e) {
+        // ignore and try globals
+      }
+
+      if (window.SplineRuntime && window.SplineRuntime.Application) return window.SplineRuntime.Application;
+      if (window.Application) return window.Application;
+      return null;
+    }
+
+    let started = false;
+    let splineApp = null;
+    function startLoad() {
+      if (started) return;
+      started = true;
+      showLoading();
+      showLoadingScreen();
+
+      if (window.location && window.location.protocol === 'file:') {
+        console.error('[Spline] Cannot load .splinecode from file://. Please run the site via a local server (e.g. VS Code Live Server).');
+      }
+
+      Promise.resolve()
+        .then(async () => {
+          const ApplicationCtor = await getSplineApplicationCtor();
+          if (!ApplicationCtor) throw new Error('Spline Runtime Application is not available (module/global)');
+
+          splineApp = new ApplicationCtor(canvas3d);
+          return splineApp.load(SPLINE_CODE_URL);
+        })
+        .then(() => {
+          // Target specific objects from the user's scene
+          let cameraTarget = null;
+          let shipTarget = null;
+          let starsTarget = null;
+          try { cameraTarget = splineApp.findObjectByName('PERSPECTIVE'); } catch (e) {}
+          try { shipTarget = splineApp.findObjectByName('SHIP & VORTEXT'); } catch (e) {}
+          try { starsTarget = splineApp.findObjectByName('STARS EMITTER'); } catch (e) {}
+
+          window.__splineApp = splineApp;
+          window.__splineObjects = { cameraTarget, shipTarget, starsTarget };
+
+          const state = { nx: 0, ny: 0 };
+          const smooth = { nx: 0, ny: 0 };
+
+          function onMove(e) {
+            state.nx = (e.clientX / window.innerWidth) * 2 - 1;
+            state.ny = (e.clientY / window.innerHeight) * 2 - 1;
+          }
+          window.addEventListener('mousemove', onMove, { passive: true });
+
+          // Smooth mouse values (GSAP if available; fallback to simple lerp)
+          let nxTo = null;
+          let nyTo = null;
+          if (typeof gsap !== 'undefined') {
+            nxTo = gsap.quickTo(smooth, 'nx', { duration: 0.35, ease: 'power3.out' });
+            nyTo = gsap.quickTo(smooth, 'ny', { duration: 0.35, ease: 'power3.out' });
+          }
+
+          function tick() {
+            if (nxTo && nyTo) {
+              nxTo(state.nx);
+              nyTo(state.ny);
+            } else {
+              smooth.nx += (state.nx - smooth.nx) * 0.12;
+              smooth.ny += (state.ny - smooth.ny) * 0.12;
+            }
+
+            if (cameraTarget && cameraTarget.rotation) {
+              cameraTarget.rotation.y = smooth.nx * 0.35;
+              cameraTarget.rotation.x = -smooth.ny * 0.2;
+            }
+
+            if (shipTarget && shipTarget.rotation) {
+              shipTarget.rotation.y = smooth.nx * 0.55;
+              shipTarget.rotation.x = -smooth.ny * 0.25;
+            }
+
+            requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+
+          markLoaded();
+        })
+        .catch((err) => {
+          console.error('[Spline] Failed to load/render scene:', err);
+          markLoaded();
+        });
+
+      // Fake progress (Spline runtime doesn't expose progress). Keeps it premium.
+      // Approach: quickly ramp to 92% then wait for load.
+      if (typeof gsap !== 'undefined') {
+        gsap.to(loadingState, {
+          p: 92,
+          duration: 2.2,
+          ease: 'power2.out',
+          onUpdate: () => {
+            if (!loadingState.done) setLoadingProgress(loadingState.p);
+          }
+        });
+      } else {
+        let p = 0;
+        const id = window.setInterval(() => {
+          if (loadingState.done) return window.clearInterval(id);
+          p = Math.min(92, p + 2);
+          setLoadingProgress(p);
+        }, 80);
+      }
+
+      // Safety timeout so we don't leave spinner forever.
+      window.setTimeout(() => {
+        if (!document.body.classList.contains('spline-loaded')) {
+          markLoaded();
+        }
+      }, 12000);
+    }
+
+    // Start loading when the browser is idle, or on first user interaction.
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(() => startLoad(), { timeout: 1500 });
+    } else {
+      window.setTimeout(() => startLoad(), 800);
+    }
+
+    const kick = () => startLoad();
+    window.addEventListener('pointerdown', kick, { once: true, passive: true });
+    window.addEventListener('keydown', kick, { once: true });
+
+    // Scroll-based transforms can be added via Spline runtime objects once we know the target names.
+  })();
+
+  /**
    * Header toggle with smooth animation
    */
   const headerToggleBtnInHeader = document.querySelector('#header .header-toggle');
@@ -222,10 +659,11 @@
   if (scrollTop) {
     scrollTop.addEventListener('click', (e) => {
       e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      if (lenis) {
+        lenis.scrollTo(0, { duration: 1.2 });
+        return;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
@@ -514,41 +952,205 @@
   /**
    * Add cursor follower effect (optional - modern touch)
    */
-  const cursor = document.createElement('div');
-  cursor.classList.add('cursor-follower');
-  cursor.style.cssText = `
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent);
-    pointer-events: none;
-    z-index: 10000;
-    transition: transform 0.15s ease;
-    display: none;
-  `;
-  
-  if (window.innerWidth > 1024) {
+  (function initLiquidCursor() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (prefersReducedMotion || !hasFinePointer) return;
+
+    const trailCanvas = document.createElement('canvas');
+    trailCanvas.id = 'star-trail-canvas';
+    trailCanvas.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(trailCanvas);
+
+    const ctx = trailCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const cursor = document.createElement('div');
+    cursor.className = 'vortex-cursor';
     document.body.appendChild(cursor);
-    cursor.style.display = 'block';
-    
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX - 10 + 'px';
-      cursor.style.top = e.clientY - 10 + 'px';
+    document.body.classList.add('has-custom-cursor');
+
+    const state = {
+      mx: window.innerWidth / 2,
+      my: window.innerHeight / 2,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      scale: 1,
+      hover: false
+    };
+
+    function resize() {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      trailCanvas.width = Math.floor(window.innerWidth * dpr);
+      trailCanvas.height = Math.floor(window.innerHeight * dpr);
+      trailCanvas.style.width = window.innerWidth + 'px';
+      trailCanvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let xTo = null;
+    let yTo = null;
+    let scaleTo = null;
+    if (typeof gsap !== 'undefined') {
+      // Slower, heavier inertia
+      xTo = gsap.quickTo(state, 'x', { duration: 0.9, ease: 'power3.out' });
+      yTo = gsap.quickTo(state, 'y', { duration: 0.9, ease: 'power3.out' });
+      scaleTo = gsap.quickTo(state, 'scale', { duration: 0.18, ease: 'power3.out' });
+    }
+
+    function onMove(e) {
+      state.mx = e.clientX;
+      state.my = e.clientY;
+      if (xTo && yTo) {
+        xTo(state.mx);
+        yTo(state.my);
+      }
+    }
+    window.addEventListener('mousemove', onMove, { passive: true });
+
+    gsap && gsap.set && gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+
+    function setHover(active) {
+      state.hover = active;
+      cursor.classList.toggle('is-hover', active);
+      if (scaleTo) {
+        scaleTo(active ? 1.65 : 1);
+      } else {
+        state.scale = active ? 1.65 : 1;
+      }
+    }
+
+    document.querySelectorAll('a, button, .btn, .project-card, .portfolio .project-card').forEach((el) => {
+      el.addEventListener('mouseenter', () => setHover(true));
+      el.addEventListener('mouseleave', () => setHover(false));
     });
-    
-    document.querySelectorAll('a, button, .btn').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(2)';
-        cursor.style.background = 'radial-gradient(circle, rgba(236, 72, 153, 0.4), transparent)';
-      });
-      
-      el.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-        cursor.style.background = 'radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent)';
-      });
-    });
-  }
+
+    const particles = [];
+    function spawnStars() {
+      const speed = Math.min(18, Math.hypot(state.mx - state.x, state.my - state.y));
+      const count = Math.max(1, Math.min(4, Math.floor(speed / 6)));
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: state.x,
+          y: state.y,
+          r: 1 + Math.random() * 1.8,
+          a: 0.95,
+          life: 1,
+          t: Math.random() * Math.PI * 2,
+          o: 6 + Math.random() * 10,
+          s: 0.05 + Math.random() * 0.08
+        });
+      }
+      if (particles.length > 180) particles.splice(0, particles.length - 180);
+    }
+
+    // Physics state for Spline-linked cursor object
+    const splinePhys = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0
+    };
+
+    function syncSplineToMouse() {
+      const app = window.__splineApp;
+      const objs = window.__splineObjects;
+      if (!app || !objs) return;
+
+      const nx = (state.x / window.innerWidth) * 2 - 1;
+      const ny = (state.y / window.innerHeight) * 2 - 1;
+
+      // Wider range so it can hit edges; tuned by viewport.
+      const xRange = Math.max(220, window.innerWidth / 2.2);
+      const yRange = Math.max(160, window.innerHeight / 2.4);
+
+      const targetX = nx * xRange;
+      const targetY = -ny * yRange;
+
+      // Slow cinematic physics + bounce on bounds
+      const follow = 0.02; // smaller = slower
+      splinePhys.vx += (targetX - splinePhys.x) * follow;
+      splinePhys.vy += (targetY - splinePhys.y) * follow;
+      splinePhys.vx *= 0.95;
+      splinePhys.vy *= 0.95;
+      splinePhys.x += splinePhys.vx;
+      splinePhys.y += splinePhys.vy;
+
+      if (splinePhys.x > xRange) {
+        splinePhys.x = xRange;
+        splinePhys.vx *= -0.82;
+      } else if (splinePhys.x < -xRange) {
+        splinePhys.x = -xRange;
+        splinePhys.vx *= -0.82;
+      }
+
+      if (splinePhys.y > yRange) {
+        splinePhys.y = yRange;
+        splinePhys.vy *= -0.82;
+      } else if (splinePhys.y < -yRange) {
+        splinePhys.y = -yRange;
+        splinePhys.vy *= -0.82;
+      }
+
+      const ship = objs.shipTarget;
+      if (ship && ship.position) {
+        ship.position.x = splinePhys.x;
+        ship.position.y = splinePhys.y;
+      }
+      if (ship && ship.scale) {
+        ship.scale.x = 0.62;
+        ship.scale.y = 0.62;
+        ship.scale.z = 0.62;
+      }
+
+      const stars = objs.starsTarget;
+      if (stars && stars.position) {
+        stars.position.x = splinePhys.x * 0.85;
+        stars.position.y = splinePhys.y * 0.85;
+      }
+    }
+
+    function draw() {
+      if (!xTo || !yTo) {
+        // Slower desktop lerp fallback
+        state.x += (state.mx - state.x) * 0.03;
+        state.y += (state.my - state.y) * 0.03;
+      }
+
+      cursor.style.transform = `translate(${state.x}px, ${state.y}px) translate(-50%, -50%) scale(${state.scale})`;
+
+      spawnStars();
+      syncSplineToMouse();
+
+      ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.t += p.s;
+        p.life -= 0.03;
+        p.a = Math.max(0, p.life);
+
+        const ox = Math.cos(p.t) * p.o;
+        const oy = Math.sin(p.t) * p.o;
+        const px = p.x + ox;
+        const py = p.y + oy;
+
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.beginPath();
+        ctx.arc(px, py, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+      ctx.globalAlpha = 1;
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  })();
 
   /**
    * Add gradient animation to text elements
