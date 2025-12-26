@@ -1081,48 +1081,44 @@
       vy: 0
     };
 
-    function syncSplineToMouse() {
+  function syncSplineToMouse() {
       const app = window.__splineApp;
       const splineObjects = window.__splineObjects;
       if (!app || !splineObjects) return;
 
+      // 1. Calculate Mouse Position relative to screen center
       const screenNx = (state.x / window.innerWidth) * 2 - 1;
       const screenNy = (state.y / window.innerHeight) * 2 - 1;
 
-      // Wider range so it can hit edges; tuned by viewport.
+      // 2. Range: Keep it wide so it hits edges
       const xRange = Math.max(220, window.innerWidth / 2.2);
       const yRange = Math.max(160, window.innerHeight / 2.4);
 
       const targetX = screenNx * xRange;
       const targetY = -screenNy * yRange;
 
-      // Extreme decoupling: 3D is always "chasing" from a distance.
-      const baseFollow = 0.004;
-      const dx = targetX - splinePhys.x;
-      const dy = targetY - splinePhys.y;
-      const dist = Math.hypot(dx, dy);
+      // 3. PHYSICS FIX: 
+      // Force (Acceleration): Reduced drastically from 0.004 to 0.0006
+      // This makes it extremely slow to start moving.
+      const follow = 0.0006;
 
-      // Keep the 3D target behind the mouse direction by a dynamic offset.
-      const dirX = dist > 0.001 ? dx / dist : 0;
-      const dirY = dist > 0.001 ? dy / dist : 0;
-      const desiredGap = Math.max(40, Math.min(180, dist * 0.22));
-      const lagTargetX = targetX - dirX * desiredGap;
-      const lagTargetY = targetY - dirY * desiredGap;
+      // Apply Force towards the target directly (No complex acceleration curves)
+      splinePhys.vx += (targetX - splinePhys.x) * follow;
+      splinePhys.vy += (targetY - splinePhys.y) * follow;
 
-      // Distance-based delay: accelerate slightly more when far, but still very heavy.
-      const follow = baseFollow * Math.min(2.2, 0.65 + dist / Math.max(1, Math.max(xRange, yRange)) * 3.2);
+      // 4. FRICTION FIX:
+      // Drag: Reduced multiplier from 0.985 to 0.96
+      // This increases "air resistance", stopping it faster so it doesn't slide endlessly.
+      splinePhys.vx *= 0.96;
+      splinePhys.vy *= 0.96;
 
-      splinePhys.vx += (lagTargetX - splinePhys.x) * follow;
-      splinePhys.vy += (lagTargetY - splinePhys.y) * follow;
-
-      // Heavy damping + soft bounce (less jitter on edges)
-      splinePhys.vx *= 0.985;
-      splinePhys.vy *= 0.985;
+      // Apply Velocity
       splinePhys.x += splinePhys.vx;
       splinePhys.y += splinePhys.vy;
 
-      const bounce = -0.62;
-      const edgeSoftness = 0.12;
+      // 5. EDGE BOUNCE (Softened)
+      const bounce = -0.5; // Less bouncy
+      const edgeSoftness = 0.05;
 
       if (splinePhys.x > xRange) {
         const over = splinePhys.x - xRange;
@@ -1144,11 +1140,13 @@
         splinePhys.vy = splinePhys.vy * bounce + over * edgeSoftness;
       }
 
+      // 6. Apply to Objects
       const ship = splineObjects.shipTarget;
       if (ship && ship.position) {
         ship.position.x = splinePhys.x;
         ship.position.y = splinePhys.y;
       }
+      // Fixed Scale (Don't change this unless you want it smaller/bigger)
       if (ship && ship.scale) {
         ship.scale.x = 0.62;
         ship.scale.y = 0.62;
@@ -1157,8 +1155,9 @@
 
       const stars = splineObjects.starsTarget;
       if (stars && stars.position) {
-        stars.position.x = splinePhys.x * 0.85;
-        stars.position.y = splinePhys.y * 0.85;
+        // Stars lag slightly behind the ship for depth effect
+        stars.position.x = splinePhys.x * 0.90;
+        stars.position.y = splinePhys.y * 0.90;
       }
     }
 
