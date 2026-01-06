@@ -163,7 +163,7 @@
    */
   function initBackgroundLayers() {
     const SPLINE_CODE_URL = 'assets/spline/scene.splinecode';
-    const SPLINE_RUNTIME_URL = 'https://unpkg.com/@splinetool/runtime@1.9.57/build/runtime.js';
+    const SPLINE_RUNTIME_URL = 'https://unpkg.com/@splinetool/runtime@latest/build/runtime.js';
 
     if (!document.body) return;
 
