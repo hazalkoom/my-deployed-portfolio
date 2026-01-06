@@ -45,7 +45,7 @@
             if (arguments.length) {
               lenis.scrollTo(value, { immediate: true });
             }
-            return window.scrollY || document.documentElement.scrollTop;
+            return lenis.scroll;
           },
           getBoundingClientRect() {
             return {
@@ -379,54 +379,71 @@
         .then(() => {
           // Target specific objects from the user's scene
           let cameraTarget = null;
-          let shipTarget = null;
           let starsTarget = null;
-          try { cameraTarget = splineApp.findObjectByName('PERSPECTIVE'); } catch (e) {}
-          try { shipTarget = splineApp.findObjectByName('SHIP & VORTEXT'); } catch (e) {}
-          try { starsTarget = splineApp.findObjectByName('STARS EMITTER'); } catch (e) {}
+          try { cameraTarget = splineApp.findObjectByName('PERSPECTIVE'); } catch (e) {
+            console.warn('[Spline] PERSPECTIVE camera not found');
+          }
+          try { starsTarget = splineApp.findObjectByName('STARS EMITTER'); } catch (e) {
+            console.warn('[Spline] STARS EMITTER not found');
+          }
+
+          // Error boundary: ensure critical objects exist
+          if (!starsTarget) {
+            console.warn('[Spline] STARS EMITTER missing - mouse follow disabled');
+          }
 
           window.__splineApp = splineApp;
-          window.__splineObjects = { cameraTarget, shipTarget, starsTarget };
+          window.__splineObjects = { cameraTarget, starsTarget };
 
-          const state = { nx: 0, ny: 0 };
-          const smooth = { nx: 0, ny: 0 };
-
-          function onMove(e) {
-            state.nx = (e.clientX / window.innerWidth) * 2 - 1;
-            state.ny = (e.clientY / window.innerHeight) * 2 - 1;
-          }
-          window.addEventListener('mousemove', onMove, { passive: true });
-
-          // Smooth mouse values (GSAP if available; fallback to simple lerp)
-          let nxTo = null;
-          let nyTo = null;
-          if (typeof gsap !== 'undefined') {
-            nxTo = gsap.quickTo(smooth, 'nx', { duration: 0.35, ease: 'power3.out' });
-            nyTo = gsap.quickTo(smooth, 'ny', { duration: 0.35, ease: 'power3.out' });
-          }
-
-          function tick() {
-            if (nxTo && nyTo) {
-              nxTo(state.nx);
-              nyTo(state.ny);
-            } else {
-              smooth.nx += (state.nx - smooth.nx) * 0.12;
-              smooth.ny += (state.ny - smooth.ny) * 0.12;
-            }
-
+          // Device detection: disable mouse follow on mobile
+          const isMobile = window.innerWidth < 768;
+          
+          if (isMobile) {
+            // Mobile: Set Spline scene to static, low-CPU state
+            console.log('[Spline] Mobile detected - scene set to static state for performance');
+            // Disable any continuous animations in the scene
             if (cameraTarget && cameraTarget.rotation) {
-              cameraTarget.rotation.y = smooth.nx * 0.35;
-              cameraTarget.rotation.x = -smooth.ny * 0.2;
+              cameraTarget.rotation.y = 0;
+              cameraTarget.rotation.x = 0;
+            }
+            if (starsTarget && starsTarget.position) {
+              starsTarget.position.x = 0;
+              starsTarget.position.y = 0;
+            }
+          } else {
+            const state = { nx: 0, ny: 0 };
+            const smooth = { nx: 0, ny: 0 };
+
+            function onMove(e) {
+              state.nx = (e.clientX / window.innerWidth) * 2 - 1;
+              state.ny = (e.clientY / window.innerHeight) * 2 - 1;
+            }
+            window.addEventListener('mousemove', onMove, { passive: true });
+
+            // Smooth mouse values (GSAP if available; fallback to simple lerp)
+            let nxTo = null;
+            let nyTo = null;
+            if (typeof gsap !== 'undefined') {
+              nxTo = gsap.quickTo(smooth, 'nx', { duration: 0.35, ease: 'power3.out' });
+              nyTo = gsap.quickTo(smooth, 'ny', { duration: 0.35, ease: 'power3.out' });
             }
 
-            if (shipTarget && shipTarget.rotation) {
-              shipTarget.rotation.y = smooth.nx * 0.55;
-              shipTarget.rotation.x = -smooth.ny * 0.25;
+            // Camera rotation (desktop only)
+            function updateCamera() {
+              if (cameraTarget && cameraTarget.rotation) {
+                if (nxTo && nyTo) {
+                  nxTo(state.nx);
+                  nyTo(state.ny);
+                } else {
+                  smooth.nx += (state.nx - smooth.nx) * 0.12;
+                  smooth.ny += (state.ny - smooth.ny) * 0.12;
+                }
+                cameraTarget.rotation.y = smooth.nx * 0.35;
+                cameraTarget.rotation.x = -smooth.ny * 0.2;
+              }
             }
-
-            requestAnimationFrame(tick);
+            window.__updateSplineCamera = updateCamera;
           }
-          requestAnimationFrame(tick);
 
           markLoaded();
         })
@@ -657,13 +674,14 @@
   }
 
   /**
-   * Enhanced Scroll top button with animation
+   * Enhanced Scroll top button with animation (Lenis-aware)
    */
   let scrollTop = document.querySelector('.scroll-top');
 
   function toggleScrollTop() {
     if (scrollTop) {
-      if (window.scrollY > 100) {
+      const scrollPos = lenis ? lenis.scroll : (window.scrollY || document.documentElement.scrollTop);
+      if (scrollPos > 100) {
         scrollTop.classList.add('active');
       } else {
         scrollTop.classList.remove('active');
@@ -682,8 +700,13 @@
     });
   }
 
-  window.addEventListener('load', toggleScrollTop);
-  document.addEventListener('scroll', toggleScrollTop);
+  // Use Lenis scroll event instead of native scroll
+  if (lenis) {
+    lenis.on('scroll', toggleScrollTop);
+  } else {
+    window.addEventListener('load', toggleScrollTop);
+    document.addEventListener('scroll', toggleScrollTop);
+  }
 
   /**
    * Enhanced AOS Animation
@@ -847,16 +870,17 @@
   });
 
   /**
-   * Enhanced Navmenu Scrollspy with smooth highlighting
+   * Enhanced Navmenu Scrollspy with smooth highlighting (Lenis-aware)
    */
   let navmenulinks = document.querySelectorAll('.navmenu a');
 
   function navmenuScrollspy() {
+    const scrollPos = lenis ? lenis.scroll : (window.scrollY || document.documentElement.scrollTop);
     navmenulinks.forEach(navmenulink => {
       if (!navmenulink.hash) return;
       let section = document.querySelector(navmenulink.hash);
       if (!section) return;
-      let position = window.scrollY + 200;
+      let position = scrollPos + 200;
       if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
         document.querySelectorAll('.navmenu a.active').forEach(link => {
           link.classList.remove('active');
@@ -868,21 +892,33 @@
     });
   }
   
-  window.addEventListener('load', navmenuScrollspy);
-  document.addEventListener('scroll', navmenuScrollspy);
+  // Use Lenis scroll event instead of native scroll
+  if (lenis) {
+    lenis.on('scroll', navmenuScrollspy);
+  } else {
+    window.addEventListener('load', navmenuScrollspy);
+    document.addEventListener('scroll', navmenuScrollspy);
+  }
 
   /**
-   * Modern parallax effect for background circles
+   * Modern parallax effect for background circles (Lenis-aware)
    */
-  window.addEventListener('scroll', function() {
-    const scrolled = window.pageYOffset;
+  function updateParallax() {
+    const scrolled = lenis ? lenis.scroll : (window.pageYOffset || document.documentElement.scrollTop);
     const parallaxElements = document.querySelectorAll('.bg-circle');
     
     parallaxElements.forEach((el, index) => {
       const speed = 0.5 + (index * 0.2);
       el.style.transform = `translateY(${scrolled * speed}px)`;
     });
-  });
+  }
+  
+  // Use Lenis scroll event instead of native scroll
+  if (lenis) {
+    lenis.on('scroll', updateParallax);
+  } else {
+    window.addEventListener('scroll', updateParallax);
+  }
 
   /**
    * Enhanced hover effects for project cards
@@ -1082,9 +1118,16 @@
     };
 
   function syncSplineToMouse() {
+      // Skip on mobile devices
+      if (window.innerWidth < 768) return;
+      
       const app = window.__splineApp;
       const splineObjects = window.__splineObjects;
       if (!app || !splineObjects) return;
+
+      // Error boundary: ensure stars exist
+      const stars = splineObjects.starsTarget;
+      if (!stars || !stars.position) return;
 
       // 1. Calculate Mouse Position relative to screen center
       const screenNx = (state.x / window.innerWidth) * 2 - 1;
@@ -1097,18 +1140,15 @@
       const targetX = screenNx * xRange;
       const targetY = -screenNy * yRange;
 
-      // 3. PHYSICS FIX: 
-      // Force (Acceleration): Reduced drastically from 0.004 to 0.0006
-      // This makes it extremely slow to start moving.
+      // 3. PHYSICS: Heavy, cinematic follow
+      // Force (Acceleration): Very slow for cinematic effect
       const follow = 0.0006;
 
-      // Apply Force towards the target directly (No complex acceleration curves)
+      // Apply Force towards the target
       splinePhys.vx += (targetX - splinePhys.x) * follow;
       splinePhys.vy += (targetY - splinePhys.y) * follow;
 
-      // 4. FRICTION FIX:
-      // Drag: Reduced multiplier from 0.985 to 0.96
-      // This increases "air resistance", stopping it faster so it doesn't slide endlessly.
+      // 4. FRICTION: High drag for smooth stopping
       splinePhys.vx *= 0.96;
       splinePhys.vy *= 0.96;
 
@@ -1117,7 +1157,7 @@
       splinePhys.y += splinePhys.vy;
 
       // 5. EDGE BOUNCE (Softened)
-      const bounce = -0.5; // Less bouncy
+      const bounce = -0.5;
       const edgeSoftness = 0.05;
 
       if (splinePhys.x > xRange) {
@@ -1140,39 +1180,41 @@
         splinePhys.vy = splinePhys.vy * bounce + over * edgeSoftness;
       }
 
-      // 6. Apply to Objects
-      const ship = splineObjects.shipTarget;
-      if (ship && ship.position) {
-        ship.position.x = splinePhys.x;
-        ship.position.y = splinePhys.y;
-      }
-      // Fixed Scale (Don't change this unless you want it smaller/bigger)
-      if (ship && ship.scale) {
-        ship.scale.x = 0.62;
-        ship.scale.y = 0.62;
-        ship.scale.z = 0.62;
-      }
-
-      const stars = splineObjects.starsTarget;
-      if (stars && stars.position) {
-        // Stars lag slightly behind the ship for depth effect
-        stars.position.x = splinePhys.x * 0.90;
-        stars.position.y = splinePhys.y * 0.90;
-      }
+      // 6. Apply to STARS EMITTER with cinematic lag
+      // Stars drift behind cursor with heavy physics
+      stars.position.x = splinePhys.x * 0.90;
+      stars.position.y = splinePhys.y * 0.90;
     }
 
-    function draw() {
+    // Master Animation Loop - Consolidates all RAF calls
+    let masterRafId = null;
+    let isMasterLoopRunning = false;
+
+    function masterAnimationLoop() {
+      if (!isMasterLoopRunning) return;
+
+      // 1. Update cursor position
       if (!xTo || !yTo) {
         // Responsive lerp fallback (when GSAP isn't present)
         state.x += (state.mx - state.x) * 0.18;
         state.y += (state.my - state.y) * 0.18;
       }
 
+      // 2. Update cursor visual
       cursor.style.transform = `translate(${state.x}px, ${state.y}px) translate(-50%, -50%) scale(${state.scale})`;
 
+      // 3. Spawn particles
       spawnStars();
+
+      // 4. Update Spline mouse follow (desktop only)
       syncSplineToMouse();
 
+      // 5. Update Spline camera (if available)
+      if (window.__updateSplineCamera) {
+        window.__updateSplineCamera();
+      }
+
+      // 6. Draw particle trail
       ctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
@@ -1195,15 +1237,175 @@
       }
       ctx.globalAlpha = 1;
 
-      requestAnimationFrame(draw);
+      // Continue master loop
+      masterRafId = requestAnimationFrame(masterAnimationLoop);
     }
 
-      requestAnimationFrame(draw);
+    function startMasterLoop() {
+      if (isMasterLoopRunning) return;
+      isMasterLoopRunning = true;
+      masterRafId = requestAnimationFrame(masterAnimationLoop);
+    }
+
+    function stopMasterLoop() {
+      isMasterLoopRunning = false;
+      if (masterRafId) {
+        cancelAnimationFrame(masterRafId);
+        masterRafId = null;
+      }
+    }
+
+    // Start master loop
+    startMasterLoop();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', stopMasterLoop);
     } catch (e) {
       // Fail silently to avoid breaking other pages
     }
   }
   runWhenDomReady(initLiquidCursor);
+
+  function initMagneticButtons() {
+    if (typeof gsap === 'undefined') return;
+
+    const targets = Array.from(document.querySelectorAll('.btn, .navmenu a'));
+    if (!targets.length) return;
+
+    const RANGE = 50;
+    const MAX_SHIFT = 14;
+
+    const items = targets
+      .filter((el) => el && !el.dataset.magneticInit)
+      .map((el) => {
+        el.dataset.magneticInit = 'true';
+        gsap.set(el, { x: 0, y: 0, transformOrigin: '50% 50%' });
+        return {
+          el,
+          active: false,
+          xTo: gsap.quickTo(el, 'x', { duration: 0.45, ease: 'power3.out' }),
+          yTo: gsap.quickTo(el, 'y', { duration: 0.45, ease: 'power3.out' })
+        };
+      });
+
+    function reset(item) {
+      item.active = false;
+      gsap.to(item.el, {
+        x: 0,
+        y: 0,
+        duration: 0.9,
+        ease: 'elastic.out(1, 0.45)',
+        overwrite: true
+      });
+    }
+
+    function onMove(e) {
+      const mx = e.clientX;
+      const my = e.clientY;
+
+      for (const item of items) {
+        const r = item.el.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = mx - cx;
+        const dy = my - cy;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < RANGE) {
+          item.active = true;
+          const strength = 1 - dist / RANGE;
+          const tx = Math.max(-MAX_SHIFT, Math.min(MAX_SHIFT, dx * 0.22 * strength));
+          const ty = Math.max(-MAX_SHIFT, Math.min(MAX_SHIFT, dy * 0.22 * strength));
+          item.xTo(tx);
+          item.yTo(ty);
+        } else if (item.active) {
+          reset(item);
+        }
+      }
+    }
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('blur', () => items.forEach(reset));
+
+    items.forEach((item) => {
+      item.el.addEventListener('pointerleave', () => reset(item));
+    });
+  }
+  runWhenDomReady(initMagneticButtons);
+
+  function initTiltCards() {
+    if (typeof gsap === 'undefined') return;
+
+    const cards = Array.from(document.querySelectorAll('.profile-card, .project-card, .experience-item'));
+    if (!cards.length) return;
+
+    const MAX_DEG = 8;
+
+    for (const card of cards) {
+      if (!card || card.dataset.tiltInit) continue;
+      card.dataset.tiltInit = 'true';
+
+      const cs = window.getComputedStyle(card);
+      if (cs.position === 'static') {
+        card.style.position = 'relative';
+      }
+      card.style.transformStyle = 'preserve-3d';
+      card.style.willChange = 'transform';
+
+      let shine = card.querySelector('.glass-shine');
+      if (!shine) {
+        shine = document.createElement('div');
+        shine.className = 'glass-shine';
+        shine.setAttribute('aria-hidden', 'true');
+        shine.style.position = 'absolute';
+        shine.style.inset = '0';
+        shine.style.borderRadius = 'inherit';
+        shine.style.pointerEvents = 'none';
+        shine.style.mixBlendMode = 'screen';
+        shine.style.opacity = '0';
+        shine.style.transition = 'opacity 0.25s ease';
+        shine.style.background = 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), rgba(255,255,255,0.08), rgba(255,255,255,0) 60%)';
+        card.appendChild(shine);
+      }
+
+      const rotateXTo = gsap.quickTo(card, 'rotationX', { duration: 0.35, ease: 'power3.out' });
+      const rotateYTo = gsap.quickTo(card, 'rotationY', { duration: 0.35, ease: 'power3.out' });
+
+      function onEnter() {
+        shine.style.opacity = '1';
+        gsap.to(card, { z: 0.001, duration: 0.01, overwrite: true });
+      }
+
+      function onLeave() {
+        rotateXTo(0);
+        rotateYTo(0);
+        shine.style.opacity = '0';
+        gsap.to(card, { duration: 0.8, ease: 'power3.out', clearProps: 'transform' });
+      }
+
+      function onCardMove(e) {
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        const px = (x / r.width) * 2 - 1;
+        const py = (y / r.height) * 2 - 1;
+
+        rotateYTo(px * MAX_DEG);
+        rotateXTo(-py * MAX_DEG);
+
+        const gx = 100 - (x / r.width) * 100;
+        const gy = 100 - (y / r.height) * 100;
+        shine.style.background = `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.22), rgba(255,255,255,0.10), rgba(255,255,255,0) 60%)`;
+      }
+
+      card.addEventListener('pointerenter', onEnter);
+      card.addEventListener('pointerleave', onLeave);
+      card.addEventListener('pointermove', onCardMove);
+    }
+  }
+  runWhenDomReady(initTiltCards);
 
   /**
    * Add gradient animation to text elements
