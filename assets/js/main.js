@@ -870,35 +870,59 @@
   });
 
   /**
-   * Enhanced Navmenu Scrollspy with smooth highlighting (Lenis-aware)
+   * Enhanced Navmenu Scrollspy with robust highlighting (Lenis-aware)
+   * Only the currently active section gets the active class
    */
-  let navmenulinks = document.querySelectorAll('.navmenu a');
+  let navmenulinks = document.querySelectorAll('.navmenu a[href^="#"]');
+  let sections = document.querySelectorAll('section[id]');
 
-  function navmenuScrollspy() {
+  function updateActiveNavLink() {
     const scrollPos = lenis ? lenis.scroll : (window.scrollY || document.documentElement.scrollTop);
-    navmenulinks.forEach(navmenulink => {
-      if (!navmenulink.hash) return;
-      let section = document.querySelector(navmenulink.hash);
-      if (!section) return;
-      let position = scrollPos + 200;
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        document.querySelectorAll('.navmenu a.active').forEach(link => {
-          link.classList.remove('active');
-        });
-        navmenulink.classList.add('active');
-      } else {
-        navmenulink.classList.remove('active');
+    
+    // Remove active from all links first
+    navmenulinks.forEach(link => link.classList.remove('active'));
+    
+    // Find which section is currently in view
+    let currentSectionId = 'hero'; // default to hero
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 250; // offset for header
+      const sectionBottom = section.offsetTop + section.offsetHeight - 250;
+      
+      if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+        currentSectionId = section.id;
       }
     });
+    
+    // Add active class only to the current section's link
+    const activeLink = document.querySelector(`.navmenu a[href="#${currentSectionId}"]`);
+    if (activeLink) {
+      activeLink.classList.add('active');
+    }
   }
   
-  // Use Lenis scroll event instead of native scroll
+  // Add click handlers to nav links
+  navmenulinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      // Remove active from all
+      navmenulinks.forEach(l => l.classList.remove('active'));
+      // Add to clicked link
+      this.classList.add('active');
+    });
+  });
+  
+  // Use Lenis scroll event or native scroll
   if (lenis) {
-    lenis.on('scroll', navmenuScrollspy);
+    lenis.on('scroll', updateActiveNavLink);
   } else {
-    window.addEventListener('load', navmenuScrollspy);
-    document.addEventListener('scroll', navmenuScrollspy);
+    window.addEventListener('scroll', updateActiveNavLink);
   }
+  
+  // Initial check on page load and DOM ready
+  runWhenDomReady(() => {
+    setTimeout(updateActiveNavLink, 100);
+  });
+  window.addEventListener('load', updateActiveNavLink);
 
   /**
    * Modern parallax effect for background circles (Lenis-aware)
