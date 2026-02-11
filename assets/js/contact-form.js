@@ -1,83 +1,100 @@
 /**
  * Contact Form Handler
- * Optimized Portfolio 2025
+ * Clean rebuild — Netlify Forms with proper validation
  */
-
-(function() {
+(function () {
   "use strict";
 
-  // Handle contact form submission
-  const contactForm = document.querySelector('.php-email-form');
-  
-  if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
+  var COOLDOWN_MS = 5000;
+
+  function initContactForm() {
+    var form = document.querySelector('.php-email-form');
+    if (!form) return;
+
+    var statusDiv = document.getElementById('form-status');
+    var statusMessage = document.getElementById('status-message');
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
+
+    var lastSubmitTime = 0;
+
+    // Real-time validation feedback
+    form.querySelectorAll('[required]').forEach(function (field) {
+      field.addEventListener('invalid', function () {
+        this.setAttribute('aria-invalid', 'true');
+      });
+      field.addEventListener('input', function () {
+        if (this.validity.valid) {
+          this.removeAttribute('aria-invalid');
+        }
+      });
+    });
+
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const formData = new FormData(contactForm);
-      const statusDiv = document.getElementById('form-status');
-      const statusMessage = document.getElementById('status-message');
-      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      // Rate-limit
+      if (Date.now() - lastSubmitTime < COOLDOWN_MS) {
+        showStatus('warn', 'Please wait a few seconds before sending again.');
+        return;
+      }
 
-      // Show loading state
-      const originalText = submitBtn.textContent;
+      // Native HTML5 validation
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Loading state
+      var originalText = submitBtn.textContent;
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
+      submitBtn.textContent = 'Sending\u2026';
 
       try {
-        // For Netlify forms, just submit normally
-        const response = await fetch(contactForm.getAttribute('action') || window.location.href, {
+        var formData = new FormData(form);
+        var response = await fetch(form.getAttribute('action') || '/', {
           method: 'POST',
+          headers: { 'Accept': 'application/json' },
           body: formData
         });
 
-        if (response.ok || contactForm.getAttribute('netlify')) {
-          // Success
-          statusDiv.style.display = 'block';
-          statusMessage.className = 'alert alert-success';
-          statusMessage.textContent = '✓ Thank you! Your message has been sent successfully. I\'ll get back to you soon!';
-          
-          // Clear form
-          contactForm.reset();
-          
-          // Hide message after 5 seconds
-          setTimeout(() => {
-            statusDiv.style.display = 'none';
-          }, 5000);
+        if (response.ok || response.redirected) {
+          showStatus('success', '\u2713 Thank you! Your message has been sent. I\u2019ll get back to you soon!');
+          form.reset();
+          lastSubmitTime = Date.now();
         } else {
-          throw new Error('Form submission failed');
+          throw new Error('Server responded with ' + response.status);
         }
-      } catch (error) {
-        // Error
-        statusDiv.style.display = 'block';
-        statusMessage.className = 'alert alert-danger';
-        statusMessage.textContent = '✗ Error sending message. Please try again or contact me directly at hazalkoom048@gmail.com';
-        
-        // Hide message after 5 seconds
-        setTimeout(() => {
-          statusDiv.style.display = 'none';
-        }, 5000);
+      } catch (err) {
+        showStatus('error', '\u2717 Error sending message. Please try again or email me at hazalkoom048@gmail.com');
       } finally {
-        // Reset button
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
       }
     });
-  }
 
-})();
-    } catch (e) {
-      text = '';
+    function showStatus(type, message) {
+      if (!statusDiv || !statusMessage) return;
+      statusDiv.style.display = 'block';
+
+      var cls = 'alert ';
+      if (type === 'success') cls += 'alert-success';
+      else if (type === 'warn') cls += 'alert-warning';
+      else cls += 'alert-danger';
+
+      statusMessage.className = cls;
+      statusMessage.textContent = message;
+      statusMessage.setAttribute('role', 'alert');
+
+      setTimeout(function () {
+        statusDiv.style.display = 'none';
+      }, 6000);
     }
-    setError(form, text || `Form submission failed: ${response.status} ${response.statusText}`);
   }
 
-  window.addEventListener('load', function () {
-    const form = document.querySelector('#contact-form');
-    if (!form) return;
-
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      submitForm(form);
-    });
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initContactForm, { once: true });
+  } else {
+    initContactForm();
+  }
 })();

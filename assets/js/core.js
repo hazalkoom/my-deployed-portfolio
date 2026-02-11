@@ -1,15 +1,14 @@
 /**
- * Core Setup - Lightweight & Fast
- * Optimized Portfolio 2025
+ * Core Setup — Lightweight & Fast
+ * Portfolio 2025
  */
-
-(function() {
+(function () {
   "use strict";
 
-  // Expose utilities globally
+  /* ── Utilities ─────────────────────────────────────── */
   window.PortfolioUtils = window.PortfolioUtils || {};
 
-  window.PortfolioUtils.runWhenDomReady = function(fn) {
+  window.PortfolioUtils.runWhenDomReady = function (fn) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', fn, { once: true });
     } else {
@@ -17,38 +16,44 @@
     }
   };
 
-  // Expose lenis globally
-  window.PortfolioUtils.lenis = null;
+  /* ── Scroll-to-top button ──────────────────────────── */
+  var scrollTopBtn = document.querySelector('.scroll-top');
 
-  // Simple scroll-to-top button
-  const scrollTopBtn = document.querySelector('#scroll-top');
+  function toggleScrollTop() {
+    if (!scrollTopBtn) return;
+    if (window.scrollY > 100) {
+      scrollTopBtn.classList.add('active');
+    } else {
+      scrollTopBtn.classList.remove('active');
+    }
+  }
+
   if (scrollTopBtn) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 100) {
-        scrollTopBtn.style.display = 'flex';
-      } else {
-        scrollTopBtn.style.display = 'none';
-      }
-    });
-
-    scrollTopBtn.addEventListener('click', (e) => {
+    scrollTopBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
-  // Hide preloader on load
-  window.addEventListener('load', () => {
-    const preloader = document.querySelector('#preloader');
+  window.addEventListener('scroll', toggleScrollTop, { passive: true });
+  window.addEventListener('load', toggleScrollTop);
+
+  /* ── Preloader ─────────────────────────────────────── */
+  window.addEventListener('load', function () {
+    var preloader = document.getElementById('preloader');
     if (preloader) {
       preloader.style.opacity = '0';
       preloader.style.visibility = 'hidden';
       preloader.style.transition = 'all 0.5s ease-out';
+      setTimeout(function () { preloader.remove(); }, 600);
     }
   });
 
+  /* ── Visibility-aware rAF guard (exposed for spline/cursor) */
+  var _tabVisible = true;
+  document.addEventListener('visibilitychange', function () {
+    _tabVisible = !document.hidden;
+  });
+  window.PortfolioUtils.isTabVisible = function () { return _tabVisible; };
 })();
 

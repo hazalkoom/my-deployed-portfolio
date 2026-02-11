@@ -11,21 +11,27 @@
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+  <meta name="theme-color" content="#0a0e1a">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  
 
   <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/light-mode.css" rel="stylesheet" id="light-mode-styles" disabled>
 
   </head>
 
 <body class="index-page">
+
+  <!-- Theme Toggle Button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+    <i class="bi bi-sun-fill"></i>
+  </button>
 
   <header id="header" class="header dark-background d-flex flex-column justify-content-center">
     <i class="header-toggle d-xl-none bi bi-list"></i>
@@ -47,9 +53,8 @@
                 <a href="tel:01090784033" class="phone"><i class="bi bi-telephone"></i></a>
                 <a href="mailto:hazalkoom048@gmail.com" class="email"><i class="bi bi-envelope"></i></a>
               </div>
-
+      </nav>
     </div>
-
   </header>
 
   <main class="main">
@@ -90,7 +95,7 @@
               <div class="hero-visual">
                 <div class="profile-container">
                   <div class="profile-background"></div>
-                  <img src="assets/img/profile/1733377765557.jpg" alt="Mohamed Ahmed Mahmoud" class="profile-image">
+                  <img src="assets/img/profile/1733377765557.jpg" alt="Mohamed Ahmed Mahmoud" class="profile-image" width="380" height="380" decoding="async">
                 </div>
               </div>
             </div>
@@ -108,7 +113,7 @@
             <div class="profile-card">
               <div class="profile-header">
                 <div class="profile-image">
-                  <img src="assets/img/profile/1733377765557.jpg" alt="Profile Image" class="img-fluid">
+                  <img src="assets/img/profile/1733377765557.jpg" alt="Profile Image" class="img-fluid" loading="lazy" width="180" height="180" decoding="async">
                 </div>
                 <div class="profile-badge">
                   <i class="bi bi-check-circle-fill"></i>
@@ -262,20 +267,26 @@ Today, I channel that passion into building the powerful backends that drive mod
     <section id="portfolio" class="portfolio section">
       <div class="container section-title" data-aos="fade-up">
         <h2>Featured Projects</h2>
-        <p>Click on any project to view more details</p>
+        <p>Hover to see GitHub and live demo links</p>
       </div>
       
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row g-4">
           <!-- SmartCart Project -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up">
-            <a href="portfolio-details3.html" class="project-card">
+            <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/smartcart-1.png" class="img-fluid" alt="SmartCart E-Commerce">
+                <img src="assets/img/portfolio/smartcart-1.png" class="img-fluid" alt="SmartCart E-Commerce" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>View Details</span>
+                    <a href="https://github.com/hazalkoom" target="_blank" class="external-link" title="GitHub Repository">
+                      <i class="bi bi-github"></i>
+                      <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="external-link" title="Live Demo">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                      <span>Demo</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -289,18 +300,24 @@ Today, I channel that passion into building the powerful backends that drive mod
                   <span class="badge">AI/ML</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
 
           <!-- MVC Coffee Shop -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <a href="portfolio-details1.html" class="project-card">
+            <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/coffee-shop-1.jpg" class="img-fluid" alt="MVC Coffee Shop">
+                <img src="assets/img/portfolio/coffee-shop-1.jpg" class="img-fluid" alt="MVC Coffee Shop" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>View Details</span>
+                    <a href="https://github.com/hazalkoom" target="_blank" class="external-link" title="GitHub Repository">
+                      <i class="bi bi-github"></i>
+                      <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="external-link" title="Live Demo">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                      <span>Demo</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -313,18 +330,24 @@ Today, I channel that passion into building the powerful backends that drive mod
                   <span class="badge">MVC</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
 
           <!-- Library Management -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <a href="portfolio-details2.html" class="project-card">
+            <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/library-1.jpg" class="img-fluid" alt="Library Management">
+                <img src="assets/img/portfolio/library-1.jpg" class="img-fluid" alt="Library Management" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>View Details</span>
+                    <a href="https://github.com/hazalkoom" target="_blank" class="external-link" title="GitHub Repository">
+                      <i class="bi bi-github"></i>
+                      <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="external-link" title="Live Demo">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                      <span>Demo</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -332,23 +355,29 @@ Today, I channel that passion into building the powerful backends that drive mod
                 <h3>Library Management</h3>
                 <p>Digital library system with admin controls</p>
                 <div class="project-tags">
-                  <span class="badge">django</span>
-                  <span class="badge">sqlite</span>
-                  <span class="badge">python</span>
+                  <span class="badge">Django</span>
+                  <span class="badge">SQLite</span>
+                  <span class="badge">Python</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
 
-          <!-- Additional Projects -->
+          <!-- Booking App -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <a href="portfolio-details4.html" class="project-card">
+            <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/booking-1.jpg" class="img-fluid" alt="Booking App">
+                <img src="assets/img/portfolio/booking-1.jpg" class="img-fluid" alt="Booking App" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>View Details</span>
+                    <a href="https://github.com/hazalkoom" target="_blank" class="external-link" title="GitHub Repository">
+                      <i class="bi bi-github"></i>
+                      <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="external-link" title="Live Demo">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                      <span>Demo</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -361,18 +390,24 @@ Today, I channel that passion into building the powerful backends that drive mod
                   <span class="badge">Django Templates</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
 
           <!-- StreamLang Project -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <a href="portfolio-details5.html" class="project-card">
+            <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/streamlang-playground.png" class="img-fluid" alt="StreamLang Programming Language" onerror="this.src='https://huggingface.co/spaces/Hazalkoom/streamlang-playground/raw/main/screenshot.png'; this.onerror=null;">
+                <img src="assets/img/portfolio/streamlang-playground.png" class="img-fluid" alt="StreamLang Programming Language" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
-                    <i class="bi bi-link-45deg"></i>
-                    <span>View Details</span>
+                    <a href="https://github.com/hazalkoom" target="_blank" class="external-link" title="GitHub Repository">
+                      <i class="bi bi-github"></i>
+                      <span>GitHub</span>
+                    </a>
+                    <a href="https://huggingface.co/spaces/Hazalkoom/streamlang-playground" target="_blank" class="external-link" title="Live Demo">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                      <span>Demo</span>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -386,14 +421,14 @@ Today, I channel that passion into building the powerful backends that drive mod
                   <span class="badge">Compiler Design</span>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
 
           <!-- WildeScope Project -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
             <div class="project-card">
               <div class="project-img-container">
-                <img src="assets/img/portfolio/wildescope-1.jpg" class="img-fluid" alt="WildeScope - Oscar Wilde Literary Platform" onerror="this.src='assets/img/portfolio/default-project.jpg'; this.onerror=null;">
+                <img src="https://wilde-scope.vercel.app/assets/images/oscar-wilde-hero.jpg" class="img-fluid" alt="WildeScope - Oscar Wilde Literary Platform" loading="lazy" width="400" height="280" decoding="async">
                 <div class="project-overlay">
                   <div class="project-links">
                     <a href="https://wilde-scope.vercel.app/" target="_blank" class="external-link" title="Live Demo">
@@ -803,20 +838,50 @@ Today, I channel that passion into building the powerful backends that drive mod
 
   <div id="preloader"></div>
 
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/typed.js/typed.umd.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="assets/vendor/aos/aos.js" defer></script>
+  <script src="assets/vendor/typed.js/typed.umd.js" defer></script>
 
-  <!-- Split JS files for easier maintenance -->
-  <script src="assets/js/core.js"></script>
-  <script src="assets/js/animations.js"></script>
-  <script src="assets/js/contact-form.js"></script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/animations.js" defer></script>
+  <script src="assets/js/contact-form.js" defer></script>
+
+  <script>
+    // Theme toggle functionality
+    (function() {
+      var themeToggle = document.getElementById('theme-toggle');
+      var lightModeStyles = document.getElementById('light-mode-styles');
+      var currentTheme = localStorage.getItem('theme') || 'dark';
+      var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      var root = document.documentElement;
+      
+      function setTheme(theme) {
+        if (theme === 'light') {
+          lightModeStyles.disabled = false;
+          themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
+          root.classList.add('light-mode');
+          document.body.classList.add('light-mode');
+          if (themeColorMeta) themeColorMeta.setAttribute('content', '#ffffff');
+        } else {
+          lightModeStyles.disabled = true;
+          themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+          root.classList.remove('light-mode');
+          document.body.classList.remove('light-mode');
+          if (themeColorMeta) themeColorMeta.setAttribute('content', '#0a0e1a');
+        }
+        localStorage.setItem('theme', theme);
+      }
+      
+      // Set initial theme
+      setTheme(currentTheme);
+      
+      // Toggle theme on button click
+      themeToggle.addEventListener('click', function() {
+        var newTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+      });
+    })();
+  </script>
 
 </body>
 
