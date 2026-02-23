@@ -1,10 +1,21 @@
 /**
 * Modern Portfolio - Updated 2024-2025
 * Enhanced with modern animations, gradients, and color trends
+*
+* STRUCTURE:
+* ✓ CSS Variables & Design Tokens (lines 1-65)
+* ✓ Base & Reset Styles (lines 66-250)
+* ✓ Accessibility (lines 251-320)
+* ✓ Animations & Keyframes (lines 321-450)
+* ✓ Layout & Components (lines 451+)
+* ✓ Light Mode Theme (imported separately)
+*
+* For modular structure, see /assets/css/modules/
+* Future: Break into modular imports for better maintainability
 */
 
 /*--------------------------------------------------------------
-# Modern Fonts & Color Variables (2024-2025 Trends)
+# SECTION 1: Modern Fonts & Color Variables (2024-2025 Trends)
 # Consolidated Root Variables
 --------------------------------------------------------------*/
 :root {
