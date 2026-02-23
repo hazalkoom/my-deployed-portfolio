@@ -186,49 +186,21 @@
   var navLinks = document.querySelectorAll('.navmenu a[href^="#"]');
   var sections = document.querySelectorAll('section[id]');
 
-  var _sectionBounds = [];
-  function computeSectionBounds() {
-    _sectionBounds = Array.prototype.map.call(sections, function (section) {
-      return {
-        id: section.id,
-        top: section.offsetTop,
-        height: section.offsetHeight
-      };
-    });
-  }
-
-  runWhenDomReady(computeSectionBounds);
-  window.addEventListener('load', computeSectionBounds);
-  window.addEventListener('resize', function () {
-    computeSectionBounds();
-  }, { passive: true });
-
   function updateActiveNavLink() {
     var scrollPos = window.scrollY || document.documentElement.scrollTop;
     var currentId = 'hero';
-    for (var i = 0; i < _sectionBounds.length; i++) {
-      var b = _sectionBounds[i];
-      var top = b.top - 250;
-      if (scrollPos >= top && scrollPos < top + b.height) {
-        currentId = b.id;
+    sections.forEach(function (section) {
+      var top = section.offsetTop - 250;
+      if (scrollPos >= top && scrollPos < top + section.offsetHeight) {
+        currentId = section.id;
       }
-    }
+    });
     navLinks.forEach(function (link) {
       link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
     });
   }
 
-  var _scrollspyScheduled = false;
-  function scheduleScrollSpy() {
-    if (_scrollspyScheduled) return;
-    _scrollspyScheduled = true;
-    requestAnimationFrame(function () {
-      _scrollspyScheduled = false;
-      updateActiveNavLink();
-    });
-  }
-
-  window.addEventListener('scroll', scheduleScrollSpy, { passive: true });
+  window.addEventListener('scroll', updateActiveNavLink, { passive: true });
   window.addEventListener('load', function () { setTimeout(updateActiveNavLink, 100); });
 
   /* ================================================================
@@ -249,7 +221,16 @@
   /* ================================================================
      PROJECT CARD HOVER (single system — no competing transforms)
      ================================================================ */
-  
+  runWhenDomReady(function () {
+    document.querySelectorAll('.project-card').forEach(function (card) {
+      card.addEventListener('mouseenter', function () {
+        this.style.transform = 'translateY(-8px)';
+      });
+      card.addEventListener('mouseleave', function () {
+        this.style.transform = '';
+      });
+    });
+  });
 
   /* ================================================================
      FORM INPUT FOCUS EFFECT

@@ -19,7 +19,8 @@
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <link href="assets/css/main.css" rel="stylesheet">
   <link href="assets/css/light-mode.css" rel="stylesheet" id="light-mode-styles" disabled>
@@ -841,47 +842,12 @@ Today, I channel that passion into building the powerful backends that drive mod
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
   <script src="assets/vendor/aos/aos.js" defer></script>
   <script src="assets/vendor/typed.js/typed.umd.js" defer></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js" defer></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js" defer></script>
 
   <script src="assets/js/core.js" defer></script>
   <script src="assets/js/animations.js" defer></script>
   <script src="assets/js/contact-form.js" defer></script>
-
-  <script>
-    // Theme toggle functionality
-    (function() {
-      var themeToggle = document.getElementById('theme-toggle');
-      var lightModeStyles = document.getElementById('light-mode-styles');
-      var currentTheme = localStorage.getItem('theme') || 'dark';
-      var themeColorMeta = document.querySelector('meta[name="theme-color"]');
-      var root = document.documentElement;
-      
-      function setTheme(theme) {
-        if (theme === 'light') {
-          lightModeStyles.disabled = false;
-          themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
-          root.classList.add('light-mode');
-          document.body.classList.add('light-mode');
-          if (themeColorMeta) themeColorMeta.setAttribute('content', '#ffffff');
-        } else {
-          lightModeStyles.disabled = true;
-          themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
-          root.classList.remove('light-mode');
-          document.body.classList.remove('light-mode');
-          if (themeColorMeta) themeColorMeta.setAttribute('content', '#0a0e1a');
-        }
-        localStorage.setItem('theme', theme);
-      }
-      
-      // Set initial theme
-      setTheme(currentTheme);
-      
-      // Toggle theme on button click
-      themeToggle.addEventListener('click', function() {
-        var newTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
-      });
-    })();
-  </script>
 
 </body>
 

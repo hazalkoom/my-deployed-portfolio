@@ -7,19 +7,19 @@
 .light-mode {
   /* Light Mode Colors */
   --background-color: #ffffff;
-  --default-color: #0f172a;
-  --heading-color: #0b1220;
-  --accent-color: #2563eb; /* Blue (primary) */
-  --accent-secondary: #f97316; /* Orange (secondary) */
-  --accent-tertiary: #94a3b8; /* Soft gray */
+  --default-color: #1a1a1a;
+  --heading-color: #0f172a;
+  --accent-color: #3b82f6; /* Bright Blue */
+  --accent-secondary: #f97316; /* Vivid Orange */
+  --accent-tertiary: #06b6d4; /* Cyan */
   --surface-color: #f8fafc;
   --contrast-color: #ffffff;
   
   /* Light Mode Gradients */
   --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  --gradient-secondary: linear-gradient(135deg, #fb923c 0%, #f97316 60%, #ea580c 100%);
-  --gradient-warm: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  --gradient-cool: linear-gradient(135deg, #eff6ff 0%, #ffffff 55%, #f8fafc 100%);
+  --gradient-secondary: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+  --gradient-warm: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+  --gradient-cool: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
   
   /* Nav colors for light mode */
   --nav-color: #475569;
@@ -27,17 +27,17 @@
   --nav-mobile-background-color: #ffffff;
   --nav-dropdown-background-color: #f8fafc;
   --nav-dropdown-color: #1e293b;
-  --nav-dropdown-hover-color: #2563eb;
+  --nav-dropdown-hover-color: #3b82f6;
 }
 
 /* Light background ONLY in light mode */
-html.light-mode {
-  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 45%, #fff7ed 100%) !important;
+.light-mode html {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 50%, #ffedd5 100%) !important;
 }
 
 .light-mode body {
   background: transparent !important;
-  color: #0f172a !important;
+  color: #1a1a1a !important;
 }
 
 /* Remove dark starry background in light mode */
@@ -58,7 +58,7 @@ html.light-mode {
 }
 
 .light-mode a {
-  color: #2563eb !important;
+  color: #3b82f6 !important;
 }
 
 .light-mode a:hover {
@@ -116,42 +116,27 @@ html.light-mode {
 
 /* Header/Sidebar - Light with Orange accents */
 .light-mode .header {
-  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%) !important;
-  border-right: 1px solid rgba(37, 99, 235, 0.18) !important;
-}
-
-.light-mode .header .header-container {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 1px solid rgba(37, 99, 235, 0.18) !important;
-}
-
-.light-mode .header .header-container::before {
-  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.08), transparent) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 50%, #ffedd5 100%) !important;
+  border-right: 1px solid rgba(249, 115, 22, 0.2) !important;
 }
 
 .light-mode .header .header-toggle,
 .light-mode .mobile-header-toggle {
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25) !important;
-}
-
-.light-mode .theme-toggle {
-  background: var(--gradient-primary) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
 }
 
 /* Mobile nav - Light */
 .light-mode #mobile-nav .mobile-nav-inner {
-  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%) !important;
-  border-left: 1px solid rgba(37, 99, 235, 0.22) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%) !important;
+  border-left: 1px solid rgba(249, 115, 22, 0.3) !important;
 }
 
 .light-mode #mobile-nav .mobile-nav-close {
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
 }
 
 /* Nav backdrop */
@@ -166,35 +151,35 @@ html.light-mode {
 
 .light-mode .navmenu a:hover {
   color: #0f172a !important;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.08)) !important;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(251, 146, 60, 0.1)) !important;
 }
 
 .light-mode .navmenu .active {
   color: #0f172a !important;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18), rgba(59, 130, 246, 0.12)) !important;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(251, 146, 60, 0.2)) !important;
 }
 
 .light-mode .navmenu a:hover .navicon,
 .light-mode .navmenu .active .navicon {
-  color: #2563eb !important;
+  color: #f97316 !important;
 }
 
 .light-mode .navmenu a::before {
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
 }
 
 /* Social links - Orange theme */
 .light-mode .social-links a {
   color: #64748b !important;
-  background: rgba(37, 99, 235, 0.06) !important;
-  border: 1px solid rgba(37, 99, 235, 0.18) !important;
+  background: rgba(249, 115, 22, 0.08) !important;
+  border: 1px solid rgba(249, 115, 22, 0.2) !important;
 }
 
 .light-mode .social-links a:hover {
   color: #ffffff !important;
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   border-color: transparent !important;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.28) !important;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.5) !important;
 }
 
 /* Glass panels - Light mode */
@@ -272,13 +257,13 @@ html.light-mode {
 }
 
 .light-mode .btn-primary {
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   border-color: transparent !important;
 }
 
 .light-mode .btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25) !important;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.5) !important;
 }
 
 .light-mode .btn-outline {
@@ -451,7 +436,7 @@ html.light-mode {
 }
 
 .light-mode .contact .info-box a {
-  color: #2563eb !important;
+  color: #3b82f6 !important;
 }
 
 /* Form elements */
@@ -488,7 +473,7 @@ html.light-mode {
 }
 
 .light-mode .footer a {
-  color: #2563eb !important;
+  color: #3b82f6 !important;
 }
 
 .light-mode .footer a:hover {
@@ -497,14 +482,14 @@ html.light-mode {
 
 /* Scroll to top button - Orange */
 .light-mode .scroll-top {
-  background: var(--gradient-primary) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
 }
 
 .light-mode .scroll-top:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-  box-shadow: 0 6px 30px rgba(37, 99, 235, 0.32) !important;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  box-shadow: 0 6px 30px rgba(249, 115, 22, 0.5) !important;
 }
 
 /* Certificates section */
