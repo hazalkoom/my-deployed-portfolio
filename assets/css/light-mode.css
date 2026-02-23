@@ -1,27 +1,25 @@
 /**
- * Light Mode Theme - ONLY APPLIES WHEN body.light-mode
- * White, Blue, Orange color scheme with black text
+ * Light Mode Theme — ONLY applies when body.light-mode
+ * Palette: White backgrounds · Blue (#3b82f6) accents · Orange (#f97316) accents · Dark text only
+ * Every rule is scoped under .light-mode so it never bleeds into dark mode.
  */
 
-/* Override root variables ONLY in light mode */
+/* ─── 1. CSS Variable Overrides ──────────────────────────────────────────── */
 .light-mode {
-  /* Light Mode Colors */
   --background-color: #ffffff;
   --default-color: #1a1a1a;
   --heading-color: #0f172a;
-  --accent-color: #3b82f6; /* Bright Blue */
-  --accent-secondary: #f97316; /* Vivid Orange */
-  --accent-tertiary: #06b6d4; /* Cyan */
+  --accent-color: #3b82f6;
+  --accent-secondary: #f97316;
+  --accent-tertiary: #06b6d4;
   --surface-color: #f8fafc;
   --contrast-color: #ffffff;
-  
-  /* Light Mode Gradients */
+
   --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
   --gradient-secondary: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
   --gradient-warm: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
   --gradient-cool: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
-  
-  /* Nav colors for light mode */
+
   --nav-color: #475569;
   --nav-hover-color: #0f172a;
   --nav-mobile-background-color: #ffffff;
@@ -30,31 +28,112 @@
   --nav-dropdown-hover-color: #3b82f6;
 }
 
-/* Light background ONLY in light mode */
+/* ─── 2. Page Background ─────────────────────────────────────────────────── */
 .light-mode html {
-  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 50%, #ffedd5 100%) !important;
+  background: #f8fafc !important;
 }
 
 .light-mode body {
-  background: transparent !important;
+  background: #f8fafc !important;
   color: #1a1a1a !important;
 }
 
-/* Remove dark starry background in light mode */
+/* Remove dark starry animation */
 .light-mode body::before {
   background-image: none !important;
-  background: radial-gradient(circle at 20% 30%, rgba(249, 115, 22, 0.05), transparent),
-              radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.05), transparent) !important;
+  background: radial-gradient(circle at 20% 30%, rgba(249, 115, 22, 0.04), transparent),
+              radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.04), transparent) !important;
 }
 
-/* Light text colors - NO WHITE TEXT */
+/* ─── 3. Global Text Colors ──────────────────────────────────────────────── */
 .light-mode body,
 .light-mode p,
 .light-mode li,
 .light-mode small,
-.light-mode span {
+.light-mode label {
   color: #374151 !important;
   text-shadow: none !important;
+}
+
+/* Catch hardcoded white/light text used in dark-mode card rules */
+.light-mode .about .profile-card,
+.light-mode .portfolio .project-card,
+.light-mode .skills .skills-category,
+.light-mode .experience .experience-item,
+.light-mode .contact .info-box,
+.light-mode .contact .contact-form {
+  color: #374151 !important;
+}
+
+.light-mode .about .profile-card p,
+.light-mode .portfolio .project-card p,
+.light-mode .skills .skills-category p,
+.light-mode .experience .experience-item p,
+.light-mode .contact .info-box p,
+.light-mode .contact .contact-form p,
+.light-mode .about .profile-card li,
+.light-mode .portfolio .project-card li,
+.light-mode .skills .skills-category li,
+.light-mode .experience .experience-item li,
+.light-mode .contact .info-box li,
+.light-mode .contact .contact-form li,
+.light-mode .about .profile-card small,
+.light-mode .portfolio .project-card small,
+.light-mode .skills .skills-category small,
+.light-mode .experience .experience-item small,
+.light-mode .contact .info-box small,
+.light-mode .contact .contact-form small {
+  color: #475569 !important;
+}
+
+.light-mode h1,
+.light-mode h2,
+.light-mode h3,
+.light-mode h4,
+.light-mode h5,
+.light-mode h6 {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
+/* Headings inside cards (hardcoded #f5f5f5 in main.css) */
+.light-mode .about .profile-card h1,
+.light-mode .about .profile-card h2,
+.light-mode .about .profile-card h3,
+.light-mode .about .profile-card h4,
+.light-mode .about .profile-card h5,
+.light-mode .about .profile-card h6,
+.light-mode .portfolio .project-card h1,
+.light-mode .portfolio .project-card h2,
+.light-mode .portfolio .project-card h3,
+.light-mode .portfolio .project-card h4,
+.light-mode .portfolio .project-card h5,
+.light-mode .portfolio .project-card h6,
+.light-mode .skills .skills-category h1,
+.light-mode .skills .skills-category h2,
+.light-mode .skills .skills-category h3,
+.light-mode .skills .skills-category h4,
+.light-mode .skills .skills-category h5,
+.light-mode .skills .skills-category h6,
+.light-mode .experience .experience-item h1,
+.light-mode .experience .experience-item h2,
+.light-mode .experience .experience-item h3,
+.light-mode .experience .experience-item h4,
+.light-mode .experience .experience-item h5,
+.light-mode .experience .experience-item h6,
+.light-mode .contact .info-box h1,
+.light-mode .contact .info-box h2,
+.light-mode .contact .info-box h3,
+.light-mode .contact .info-box h4,
+.light-mode .contact .info-box h5,
+.light-mode .contact .info-box h6,
+.light-mode .contact .contact-form h1,
+.light-mode .contact .contact-form h2,
+.light-mode .contact .contact-form h3,
+.light-mode .contact .contact-form h4,
+.light-mode .contact .contact-form h5,
+.light-mode .contact .contact-form h6 {
+  color: #0f172a !important;
 }
 
 .light-mode a {
@@ -65,59 +144,44 @@
   color: #f97316 !important;
 }
 
-.light-mode h1,
-.light-mode h2,
-.light-mode h3,
-.light-mode h4,
-.light-mode h5,
-.light-mode h6,
-.light-mode .h1,
-.light-mode .h2,
-.light-mode .h3,
-.light-mode .h4,
-.light-mode .h5,
-.light-mode .h6 {
-  color: #0f172a !important;
-  text-shadow: none !important;
+/* ─── 4. Section Title ───────────────────────────────────────────────────── */
+.light-mode .section-title p {
+  /* hardcoded rgba(232,234,246,0.8) in main.css */
+  color: #64748b !important;
 }
 
-/* Override any white text */
-.light-mode * {
-  color: inherit;
+/* ─── 5. Scrollbar ───────────────────────────────────────────────────────── */
+.light-mode ::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
 }
 
-.light-mode .btn,
-.light-mode .btn-primary,
-.light-mode .btn-outline {
-  color: #ffffff !important;
-}
-
-.light-mode .btn-outline {
-  color: #f97316 !important;
-}
-
-.light-mode .btn-outline:hover {
-  color: #ffffff !important;
-}
-
-/* Light scrollbar ONLY in light mode */
 .light-mode ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #f97316 0%, #3b82f6 100%) !important;
 }
 
 .light-mode ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #ea580c 0%, #2563eb 100%) !important;
-  box-shadow: 0 0 15px rgba(249, 115, 22, 0.6) !important;
 }
 
 .light-mode * {
-  scrollbar-color: #f97316 transparent !important;
+  scrollbar-color: #f97316 #f1f5f9 !important;
 }
 
-/* Header/Sidebar - Light with Orange accents */
+/* ─── 6. Header / Sidebar ────────────────────────────────────────────────── */
 .light-mode .header {
-  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 50%, #ffedd5 100%) !important;
-  border-right: 1px solid rgba(249, 115, 22, 0.2) !important;
+  background: #ffffff !important;
+}
+
+/* .header-container has hardcoded dark gradient in main.css */
+.light-mode .header .header-container {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%) !important;
+  border: 1px solid rgba(249, 115, 22, 0.2) !important;
+}
+
+/* Hide dark shimmer overlay */
+.light-mode .header .header-container::before {
+  background: none !important;
+  animation: none !important;
 }
 
 .light-mode .header .header-toggle,
@@ -127,7 +191,8 @@
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
 }
 
-/* Mobile nav - Light */
+/* ─── 7. Mobile Nav Drawer ───────────────────────────────────────────────── */
+/* .mobile-nav-inner has hardcoded dark gradient in main.css */
 .light-mode #mobile-nav .mobile-nav-inner {
   background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%) !important;
   border-left: 1px solid rgba(249, 115, 22, 0.3) !important;
@@ -139,24 +204,24 @@
   box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4) !important;
 }
 
-/* Nav backdrop */
 .light-mode #nav-backdrop {
-  background: rgba(15, 23, 42, 0.3) !important;
+  background: rgba(15, 23, 42, 0.25) !important;
 }
 
-/* Navigation links - Light with orange hover */
+/* ─── 8. Navigation Links ────────────────────────────────────────────────── */
 .light-mode .navmenu a {
   color: #475569 !important;
 }
 
 .light-mode .navmenu a:hover {
   color: #0f172a !important;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(251, 146, 60, 0.1)) !important;
+  background: rgba(249, 115, 22, 0.1) !important;
 }
 
-.light-mode .navmenu .active {
+.light-mode .navmenu .active,
+.light-mode .navmenu .active > a {
   color: #0f172a !important;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.25), rgba(251, 146, 60, 0.2)) !important;
+  background: rgba(249, 115, 22, 0.15) !important;
 }
 
 .light-mode .navmenu a:hover .navicon,
@@ -168,7 +233,7 @@
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
 }
 
-/* Social links - Orange theme */
+/* ─── 9. Social Links ────────────────────────────────────────────────────── */
 .light-mode .social-links a {
   color: #64748b !important;
   background: rgba(249, 115, 22, 0.08) !important;
@@ -182,52 +247,15 @@
   box-shadow: 0 4px 15px rgba(249, 115, 22, 0.5) !important;
 }
 
-/* Glass panels - Light mode */
-.light-mode .glass-panel,
-.light-mode .about .profile-card,
-.light-mode .skills .skills-category,
-.light-mode .portfolio .project-card,
-.light-mode .experience .experience-item,
-.light-mode .contact .info-box {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-}
-
-@media (min-width: 768px) {
-  .light-mode .glass-panel,
-  .light-mode .about .profile-card,
-  .light-mode .skills .skills-category,
-  .light-mode .portfolio .project-card,
-  .light-mode .experience .experience-item,
-  .light-mode .contact .info-box {
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
-  }
-}
-
-/* Hero section - Light */
+/* ─── 10. Hero Section ───────────────────────────────────────────────────── */
 .light-mode .hero {
   background: transparent !important;
 }
 
+/* .hero-content has hardcoded dark rgba in main.css (desktop + mobile breakpoint) */
 .light-mode .hero .hero-content {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.2) !important;
-}
-
-@media (min-width: 769px) {
-  .light-mode .hero .hero-content {
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-  }
-}
-
-.light-mode .hero .background-elements .bg-circle.circle-1 {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.12), rgba(99, 102, 241, 0.08), transparent) !important;
-}
-
-.light-mode .hero .background-elements .bg-circle.circle-2 {
-  background: radial-gradient(circle, rgba(249, 115, 22, 0.12), rgba(251, 146, 60, 0.08), transparent) !important;
+  background: rgba(255, 255, 255, 0.97) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
 }
 
 .light-mode .hero .hero-text h1,
@@ -235,8 +263,14 @@
   color: #0f172a !important;
 }
 
+/* .lead has hardcoded rgba(240,240,240,0.9) in main.css */
 .light-mode .hero .hero-text .lead {
   color: #374151 !important;
+}
+
+.light-mode .hero .hero-text .lead span {
+  color: #3b82f6 !important;
+  border-bottom-color: #3b82f6 !important;
 }
 
 .light-mode .hero .hero-text h1 .accent-text {
@@ -250,20 +284,29 @@
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
 }
 
-/* Buttons - Light mode with Orange */
+.light-mode .hero .background-elements .bg-circle.circle-1 {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.06), transparent) !important;
+}
+
+.light-mode .hero .background-elements .bg-circle.circle-2 {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.1), rgba(251, 146, 60, 0.06), transparent) !important;
+}
+
+/* ─── 11. Buttons ────────────────────────────────────────────────────────── */
 .light-mode .btn {
-  color: #ffffff !important;
   text-shadow: none !important;
 }
 
 .light-mode .btn-primary {
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
+  color: #ffffff !important;
   border-color: transparent !important;
 }
 
 .light-mode .btn-primary:hover {
   background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
   box-shadow: 0 10px 30px rgba(249, 115, 22, 0.5) !important;
+  color: #ffffff !important;
 }
 
 .light-mode .btn-outline {
@@ -278,35 +321,34 @@
   border-color: transparent !important;
 }
 
-/* Sections */
+/* ─── 12. Sections (generic) ─────────────────────────────────────────────── */
 .light-mode .section {
   background: transparent !important;
 }
 
 .light-mode .section-title h2 {
-  color: #0f172a !important;
   background: linear-gradient(135deg, #f97316 0%, #3b82f6 50%, #fb923c 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
 }
 
-.light-mode .section-title p {
-  color: #64748b !important;
+/* ─── 13. Cards / Glass Panels ───────────────────────────────────────────── */
+.light-mode .glass-panel,
+.light-mode .about .profile-card,
+.light-mode .skills .skills-category,
+.light-mode .portfolio .project-card,
+.light-mode .experience .experience-item,
+.light-mode .contact .info-box {
+  background: #ffffff !important;
+  border: 1px solid rgba(59, 130, 246, 0.12) !important;
+  box-shadow: 0 2px 16px rgba(59, 130, 246, 0.06) !important;
 }
 
-/* About section */
-.light-mode .about .profile-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
+/* ─── 14. About Section ──────────────────────────────────────────────────── */
 .light-mode .about .profile-badge {
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   color: #ffffff !important;
-}
-
-.light-mode .about h3 {
-  color: #0f172a !important;
 }
 
 .light-mode .about .lead {
@@ -329,17 +371,9 @@
   color: #64748b !important;
 }
 
-/* Skills section */
-.light-mode .skills .skills-category {
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
-.light-mode .skills .skills-category h3 {
-  color: #0f172a !important;
-}
-
+/* ─── 15. Skills Section ─────────────────────────────────────────────────── */
 .light-mode .skills .skill-item {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: #f8fafc !important;
   border: 1px solid rgba(59, 130, 246, 0.15) !important;
   color: #374151 !important;
 }
@@ -351,12 +385,7 @@
   box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4) !important;
 }
 
-/* Portfolio/Projects */
-.light-mode .portfolio .project-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-}
-
+/* ─── 16. Portfolio / Projects ───────────────────────────────────────────── */
 .light-mode .portfolio .project-card:hover {
   box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2) !important;
   border-color: rgba(59, 130, 246, 0.3) !important;
@@ -366,28 +395,19 @@
   background: linear-gradient(to top, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.85)) !important;
 }
 
-.light-mode .portfolio .project-info h3 {
-  color: #0f172a !important;
-}
-
 .light-mode .portfolio .project-info p {
   color: #64748b !important;
 }
 
 .light-mode .portfolio .badge {
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(59, 130, 246, 0.1)) !important;
+  background: rgba(249, 115, 22, 0.1) !important;
   color: #c2410c !important;
   border: 1px solid rgba(249, 115, 22, 0.25) !important;
 }
 
-/* Experience section */
+/* ─── 17. Experience Section ─────────────────────────────────────────────── */
 .light-mode .experience .experience-item {
-  background: rgba(255, 255, 255, 0.95) !important;
   border-left: 3px solid #f97316 !important;
-}
-
-.light-mode .experience .experience-item h3 {
-  color: #0f172a !important;
 }
 
 .light-mode .experience .experience-item h4 {
@@ -403,22 +423,13 @@
   border: 1px solid rgba(249, 115, 22, 0.2) !important;
 }
 
-.light-mode .experience .experience-item ul li {
-  color: #475569 !important;
-}
-
 .light-mode .experience .experience-item ul li::before {
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
 }
 
-/* Contact section */
-.light-mode .contact .info-box {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-}
-
+/* ─── 18. Contact Section ────────────────────────────────────────────────── */
 .light-mode .contact .info-box:hover {
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.2) !important;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.15) !important;
   border-color: rgba(249, 115, 22, 0.3) !important;
 }
 
@@ -427,41 +438,52 @@
   color: #ffffff !important;
 }
 
-.light-mode .contact .info-box h3 {
-  color: #0f172a !important;
-}
-
-.light-mode .contact .info-box p {
-  color: #475569 !important;
-}
-
 .light-mode .contact .info-box a {
   color: #3b82f6 !important;
 }
 
-/* Form elements */
-.light-mode .contact form .form-group input,
-.light-mode .contact form .form-group textarea {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 2px solid rgba(59, 130, 246, 0.15) !important;
+/* .contact-form has hardcoded dark rgba background in main.css */
+.light-mode .contact .contact-form {
+  background: #ffffff !important;
+  border: 1px solid rgba(59, 130, 246, 0.12) !important;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.06) !important;
+}
+
+/* .form-control has hardcoded dark transparent bg + light text in main.css */
+.light-mode .contact .form-control {
+  background: #f8fafc !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
   color: #1a1a1a !important;
 }
 
-.light-mode .contact form .form-group input:focus,
-.light-mode .contact form .form-group textarea:focus {
-  border-color: #f97316 !important;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1) !important;
-}
-
-.light-mode .contact form .form-group input::placeholder,
-.light-mode .contact form .form-group textarea::placeholder {
+.light-mode .contact .form-control::placeholder {
   color: #94a3b8 !important;
 }
 
-/* Footer */
+.light-mode .contact .form-control:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1) !important;
+  background: #ffffff !important;
+}
+
+/* Form status alerts (hardcoded light-on-dark colours in main.css) */
+.light-mode #form-status .alert-success {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: #166534 !important;
+}
+
+.light-mode #form-status .alert-danger {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #991b1b !important;
+}
+
+/* ─── 19. Footer ─────────────────────────────────────────────────────────── */
+/* .footer has hardcoded dark gradient in main.css */
 .light-mode .footer {
   background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
-  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.15) !important;
   color: #475569 !important;
 }
 
@@ -480,7 +502,7 @@
   color: #f97316 !important;
 }
 
-/* Scroll to top button - Orange */
+/* ─── 20. Scroll-to-top Button ───────────────────────────────────────────── */
 .light-mode .scroll-top {
   background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
   color: #ffffff !important;
@@ -492,19 +514,15 @@
   box-shadow: 0 6px 30px rgba(249, 115, 22, 0.5) !important;
 }
 
-/* Certificates section */
+/* ─── 21. Certificates Section ───────────────────────────────────────────── */
 .light-mode .certificates .certificate-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(59, 130, 246, 0.12) !important;
 }
 
 .light-mode .certificates .certificate-card:hover {
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.2) !important;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.15) !important;
   border-color: rgba(249, 115, 22, 0.3) !important;
-}
-
-.light-mode .certificates .certificate-card h4 {
-  color: #0f172a !important;
 }
 
 .light-mode .certificates .certificate-issuer {
