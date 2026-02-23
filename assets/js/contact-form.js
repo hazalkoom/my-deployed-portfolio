@@ -1,11 +1,13 @@
 /**
  * Contact Form Handler
- * Clean rebuild — Netlify Forms with proper validation
+ * Clean rebuild — Netlify Forms with proper validation & retry logic
  */
 (function () {
   "use strict";
 
   var COOLDOWN_MS = 5000;
+  var MAX_RETRIES = 3;
+  var RETRY_DELAY = 2000; // 2 seconds between retries
 
   function initContactForm() {
     var form = document.querySelector('.php-email-form');
@@ -17,6 +19,8 @@
     if (!submitBtn) return;
 
     var lastSubmitTime = 0;
+    var retryCount = 0;
+    var pendingFormData = null;
 
     // Real-time validation feedback
     form.querySelectorAll('[required]').forEach(function (field) {
@@ -45,33 +49,52 @@
         return;
       }
 
-      // Loading state
+      // Set loading state
       var originalText = submitBtn.textContent;
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending\u2026';
+      retryCount = 0;
 
+      pendingFormData = new FormData(form);
+      await sendFormWithRetry(originalText);
+    });
+
+    async function sendFormWithRetry(originalText) {
       try {
-        var formData = new FormData(form);
         var response = await fetch(form.getAttribute('action') || '/', {
           method: 'POST',
           headers: { 'Accept': 'application/json' },
-          body: formData
+          body: pendingFormData
         });
 
         if (response.ok || response.redirected) {
           showStatus('success', '\u2713 Thank you! Your message has been sent. I\u2019ll get back to you soon!');
           form.reset();
           lastSubmitTime = Date.now();
+          retryCount = 0;
         } else {
           throw new Error('Server responded with ' + response.status);
         }
       } catch (err) {
-        showStatus('error', '\u2717 Error sending message. Please try again or email me at hazalkoom048@gmail.com');
+        if (retryCount < MAX_RETRIES) {
+          retryCount++;
+          showStatus('warn', `Retrying... (Attempt ${retryCount}/${MAX_RETRIES})`);
+          
+          // Wait before retrying
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+          await sendFormWithRetry(originalText);
+        } else {
+          showStatus('error', '\u2717 Error sending message after multiple attempts. Please try again or email me at hazalkoom048@gmail.com');
+          retryCount = 0;
+        }
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
+        // Only reset button if not retrying
+        if (retryCount === 0) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       }
-    });
+    }
 
     function showStatus(type, message) {
       if (!statusDiv || !statusMessage) return;
@@ -86,9 +109,12 @@
       statusMessage.textContent = message;
       statusMessage.setAttribute('role', 'alert');
 
-      setTimeout(function () {
-        statusDiv.style.display = 'none';
-      }, 6000);
+      // Auto-hide on success only
+      if (type === 'success') {
+        setTimeout(function () {
+          statusDiv.style.display = 'none';
+        }, 6000);
+      }
     }
   }
 

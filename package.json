@@ -1,0 +1,40 @@
+{
+  "name": "hazalkoom-portfolio",
+  "version": "2.0.0",
+  "description": "Modern portfolio website for Mohamed Ahmed Mahmoud - Software Engineer",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:css && npm run build:js && npm run build:clean",
+    "build:css": "node scripts/build-css.js",
+    "build:js": "node scripts/build-js.js",
+    "build:clean": "node scripts/cleanup.js",
+    "dev": "npm run watch",
+    "watch": "node scripts/watch.js",
+    "format": "prettier --write \"assets/**/*.{js,css}\"",
+    "lint": "eslint assets/js/**/*.js"
+  },
+  "keywords": [
+    "portfolio",
+    "software-engineer",
+    "backend-developer",
+    "MEAN-stack",
+    "Node.js",
+    "Angular",
+    "MongoDB"
+  ],
+  "author": "Mohamed Ahmed Mahmoud",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.19.0",
+    "postcss": "^8.4.0",
+    "postcss-cli": "^10.1.0",
+    "csso-cli": "^4.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.50.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
