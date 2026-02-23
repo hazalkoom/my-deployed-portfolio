@@ -8,6 +8,37 @@
   <meta name="description" content="Mohamed Ahmed Mahmoud - Software Engineer and backend/MEAN stack developer portfolio. Projects, experience, education, and certificates.">
   <meta name="keywords" content="Mohamed Ahmed Mahmoud, portfolio, software engineer, backend developer, MEAN stack, Node.js, Express, Angular, MongoDB, Django">
 
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://hazalkoom-portfolio.netlify.app">
+  <meta property="og:title" content="Mohamed Ahmed Mahmoud - Software Engineer & Backend Developer">
+  <meta property="og:description" content="Full-stack developer specializing in MEAN stack, Node.js, and Django. Explore my projects, experience, and expertise in building scalable backend systems.">
+  <meta property="og:image" content="https://hazalkoom-portfolio.netlify.app/assets/img/profile/1733377765557.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://hazalkoom-portfolio.netlify.app">
+  <meta name="twitter:title" content="Mohamed Ahmed Mahmoud - Software Engineer">
+  <meta name="twitter:description" content="Full-stack developer specializing in MEAN stack, Node.js, and Django. Building scalable backend systems.">
+  <meta name="twitter:image" content="https://hazalkoom-portfolio.netlify.app/assets/img/profile/1733377765557.jpg">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://hazalkoom-portfolio.netlify.app">
+
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_GA_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YOUR_GA_ID', {
+      'allow_google_signals': true,
+      'allow_ad_personalization_signals': true
+    });
+  </script>
+
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
@@ -25,9 +56,91 @@
   <link href="assets/css/main.css" rel="stylesheet">
   <link href="assets/css/light-mode.css" rel="stylesheet" id="light-mode-styles" disabled>
 
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Mohamed Ahmed Mahmoud",
+    "url": "https://hazalkoom-portfolio.netlify.app",
+    "image": "https://hazalkoom-portfolio.netlify.app/assets/img/profile/1733377765557.jpg",
+    "jobTitle": "Software Engineer",
+    "description": "Backend/MEAN Stack Developer specializing in building scalable APIs and full-stack applications",
+    "sameAs": [
+      "https://github.com/hazalkoom",
+      "https://www.linkedin.com/in/mohamed-ahmed-mahmoud-766912268/"
+    ],
+    "email": "hazalkoom048@gmail.com",
+    "telephone": "+20 109 0784033",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Mansoura",
+      "addressCountry": "EG"
+    },
+    "knowsAbout": [
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "Angular",
+      "TypeScript",
+      "JavaScript",
+      "Django",
+      "Python",
+      "RESTful APIs",
+      "MEAN Stack",
+      "Full-stack Development"
+    ],
+    "hasOccupation": {
+      "@type": "Occupation",
+      "name": "Software Engineer",
+      "occupationLocation": {
+        "@type": "City",
+        "name": "Mansoura"
+      }
+    }
+  }
+  </script>
+
+  <!-- Breadcrumb Navigation -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://hazalkoom-portfolio.netlify.app"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://hazalkoom-portfolio.netlify.app/#about"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Projects",
+        "item": "https://hazalkoom-portfolio.netlify.app/#portfolio"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "Contact",
+        "item": "https://hazalkoom-portfolio.netlify.app/#contact"
+      }
+    ]
+  }
+  </script>
+
   </head>
 
 <body class="index-page">
+
+  <!-- Skip to main content link (Accessibility) -->
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Theme Toggle Button -->
   <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
@@ -787,19 +900,23 @@ Today, I channel that passion into building the powerful backends that drive mod
                 <div class="row gy-4">
 
                   <div class="col-md-6">
-                    <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                    <label for="name" class="form-label">Your Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required="">
                   </div>
 
                   <div class="col-md-6 ">
-                    <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                    <label for="email" class="form-label">Your Email</label>
+                    <input type="email" id="email" class="form-control" name="email" placeholder="your@email.com" required="">
                   </div>
 
                   <div class="col-12">
-                    <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" id="subject" class="form-control" name="subject" placeholder="What is this about?" required="">
                   </div>
 
                   <div class="col-12">
-                    <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="6" placeholder="Your message here..." required=""></textarea>
                   </div>
 
                   <div class="col-12 text-center">

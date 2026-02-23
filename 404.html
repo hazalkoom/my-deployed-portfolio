@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>404 - Page Not Found | Mohamed Ahmed Mahmoud Portfolio</title>
+  <meta name="description" content="The page you're looking for doesn't exist. Let's get you back on track.">
+  <meta name="theme-color" content="#0a0e1a">
+
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/light-mode.css" rel="stylesheet" id="light-mode-styles" disabled>
+
+  <style>
+    .error-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0f1628 100%);
+    }
+
+    .error-content {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .error-code {
+      font-size: 8rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .error-title {
+      font-size: 2rem;
+      color: var(--heading-color);
+      margin: 1rem 0;
+      font-weight: 700;
+    }
+
+    .error-description {
+      color: var(--default-color);
+      margin: 1rem 0 2rem;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .error-code {
+        font-size: 4rem;
+      }
+
+      .error-title {
+        font-size: 1.5rem;
+      }
+
+      .error-actions {
+        flex-direction: column;
+      }
+
+      .error-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="index-page">
+
+  <!-- Theme Toggle Button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+    <i class="bi bi-sun-fill"></i>
+  </button>
+
+  <main class="main">
+    <div class="error-container">
+      <div class="error-content">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Page Not Found</h2>
+        <p class="error-description">
+          The page you're looking for doesn't exist. Let's get you back on the right path.
+        </p>
+
+        <div class="error-actions">
+          <a href="/" class="btn btn-primary">
+            <i class="bi bi-house"></i> Go Home
+          </a>
+          <a href="/#portfolio" class="btn btn-outline">
+            <i class="bi bi-images"></i> View Projects
+          </a>
+          <a href="/#contact" class="btn btn-outline">
+            <i class="bi bi-envelope"></i> Contact
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+  <script src="assets/js/core.js" defer></script>
+
+</body>
+
+</html>

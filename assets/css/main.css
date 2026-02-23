@@ -70,6 +70,44 @@ body {
   font-size: var(--fs-body);
 }
 
+/* Skip to content link (accessibility) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-color);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Universal focus styles for accessibility */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 html {
   background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0f1628 100%);
   min-height: 100vh;
@@ -1915,6 +1953,14 @@ h1, h2, h3, h4, h5, h6,
   margin-bottom: 1rem;
   font-size: 1.275rem;
   font-weight: 700;
+}
+
+.contact .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--default-color);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .contact .form-control {
