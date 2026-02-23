@@ -633,39 +633,6 @@ h1, h2, h3, h4, h5, h6,
   animation: pulse 2s infinite;
 }
 
-/* Theme Toggle Button */
-.theme-toggle {
-  color: var(--contrast-color);
-  background: var(--gradient-secondary);
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  position: fixed;
-  top: 20px;
-  right: 85px;
-  z-index: 9999;
-  transition: all var(--animation-duration) var(--animation-timing);
-  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
-}
-
-.theme-toggle:hover {
-  transform: rotate(180deg) scale(1.1);
-  box-shadow: 0 6px 30px rgba(249, 115, 22, 0.6);
-}
-
-@media (max-width: 1199px) {
-  .theme-toggle {
-    top: 20px;
-    right: 85px;
-  }
-}
-
 .mobile-header-toggle {
   color: var(--contrast-color);
   background: var(--gradient-primary);

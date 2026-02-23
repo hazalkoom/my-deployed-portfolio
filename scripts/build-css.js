@@ -23,10 +23,6 @@ try {
   execSync(`npx csso assets/css/main.css -o ${distDir}/main.min.css`, { stdio: 'inherit' });
   console.log('✓ main.min.css created');
 
-  // Minify light-mode.css
-  execSync(`npx csso assets/css/light-mode.css -o ${distDir}/light-mode.min.css`, { stdio: 'inherit' });
-  console.log('✓ light-mode.min.css created');
-
   // Get file sizes for comparison
   const mainOriginal = fs.statSync('assets/css/main.css').size;
   const mainMinified = fs.statSync(`${distDir}/main.min.css`).size;

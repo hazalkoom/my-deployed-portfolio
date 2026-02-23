@@ -56,40 +56,6 @@
   });
   window.PortfolioUtils.isTabVisible = function () { return _tabVisible; };
 
-  /* ── Theme Toggle with localStorage ─────────────── */
-  window.PortfolioUtils.initTheme = function () {
-    var themeToggle = document.getElementById('theme-toggle');
-    if (!themeToggle) return;
 
-    // Use saved preference, default to 'dark' always
-    var currentTheme = localStorage.getItem('portfolio-theme') || 'dark';
-
-    function setTheme(theme) {
-      if (theme === 'light') {
-        document.body.classList.add('light-mode');
-        themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
-        themeToggle.setAttribute('aria-label', 'Switch to dark mode');
-      } else {
-        document.body.classList.remove('light-mode');
-        themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
-        themeToggle.setAttribute('aria-label', 'Switch to light mode');
-      }
-      localStorage.setItem('portfolio-theme', theme);
-      document.documentElement.style.colorScheme = theme;
-    }
-
-    // Set initial theme
-    setTheme(currentTheme);
-
-    // Listen for theme toggle clicks
-    themeToggle.addEventListener('click', function (e) {
-      e.preventDefault();
-      var newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
-      setTheme(newTheme);
-    });
-  };
-
-  // Initialize theme on DOM ready
-  window.PortfolioUtils.runWhenDomReady(window.PortfolioUtils.initTheme);
 })();
 
