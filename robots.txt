@@ -1,0 +1,19 @@
+# SEO robots.txt
+# Portfolio - hazalkoom
+
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /sitemap.xml
+
+Disallow: /.git/
+Disallow: /.vscode/
+Disallow: /node_modules/
+Disallow: /.env
+Disallow: /.gitignore
+
+# Sitemap location
+Sitemap: https://hazalkoom-portfolio.netlify.app/sitemap.xml
+
+# Crawl delay to be respectful
+Crawl-delay: 1

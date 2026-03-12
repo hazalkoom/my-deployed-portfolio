@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+assets/css/dist/
+assets/js/dist/
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Development documentation (not needed for deployment)
+BUILD.md
+IMPROVEMENT_ANALYSIS.md
+VENDOR_AUDIT.md
+TYPESCRIPT_MIGRATION.md
+*.todo
+.todo
+
+# Keep these for deployment:
+# - README.md (GitHub)
+# - sitemap.xml (SEO)
+# - robots.txt (SEO)
+# - index.html, thank-you.html, 404.html (deployment)
