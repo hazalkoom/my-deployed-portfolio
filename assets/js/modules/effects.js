@@ -13,11 +13,44 @@
     }
   };
 
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var existing = document.querySelector('script[src="' + src + '"]');
+      if (existing) {
+        if (existing.dataset.loaded === 'true') {
+          resolve();
+          return;
+        }
+        existing.addEventListener('load', function () { resolve(); }, { once: true });
+        existing.addEventListener('error', function () { reject(new Error('Script load failed: ' + src)); }, { once: true });
+        return;
+      }
+
+      var script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      script.addEventListener('load', function () {
+        script.dataset.loaded = 'true';
+        resolve();
+      }, { once: true });
+      script.addEventListener('error', function () {
+        reject(new Error('Script load failed: ' + src));
+      }, { once: true });
+      document.body.appendChild(script);
+    });
+  }
+
   /* ================================================================
      AOS — Animate On Scroll
      ================================================================ */
   runWhenDomReady(function () {
-    if (typeof AOS !== 'undefined') {
+    if (prefersReducedMotion()) return;
+
+    function initAOS() {
       AOS.init({
         duration: 600,
         easing: 'ease-in-out',
@@ -25,6 +58,19 @@
         offset: 50
       });
     }
+
+    if (typeof AOS !== 'undefined') {
+      initAOS();
+      return;
+    }
+
+    loadScript('assets/vendor/aos/aos.js')
+      .then(function () {
+        if (typeof AOS !== 'undefined') initAOS();
+      })
+      .catch(function () {
+        // Optional enhancement should fail silently.
+      });
   });
 
   /* ================================================================
@@ -49,93 +95,58 @@
      GLIGHTBOX — Image lightbox
      ================================================================ */
   runWhenDomReady(function () {
-    if (typeof GLightbox !== 'undefined') {
+    if (!document.querySelector('.glightbox')) return;
+
+    function initLightbox() {
       GLightbox({ selector: '.glightbox' });
     }
+
+    if (typeof GLightbox !== 'undefined') {
+      initLightbox();
+      return;
+    }
+
+    loadScript('assets/vendor/glightbox/js/glightbox.min.js')
+      .then(function () {
+        if (typeof GLightbox !== 'undefined') initLightbox();
+      })
+      .catch(function () {
+        // Optional enhancement should fail silently.
+      });
   });
 
   /* ================================================================
      SWIPER — Carousels (if any)
      ================================================================ */
   runWhenDomReady(function () {
-    if (typeof Swiper === 'undefined') return;
-    document.querySelectorAll('.init-swiper').forEach(function (el) {
-      var configEl = el.querySelector('.swiper-config');
-      if (configEl) {
-        new Swiper(el, JSON.parse(configEl.textContent.trim()));
-      }
-    });
-  });
+    var swiperRoots = document.querySelectorAll('.init-swiper');
+    if (!swiperRoots.length) return;
 
-  /* ================================================================
-     SCROLLSPY — Active nav highlighting
-     ================================================================ */
-  var navLinks = document.querySelectorAll('.navmenu a[href^="#"]');
-  var sections = document.querySelectorAll('section[id]');
-
-  function updateActiveNavLink() {
-    var scrollPos = window.scrollY || document.documentElement.scrollTop;
-    var currentId = 'hero';
-    sections.forEach(function (section) {
-      var top = section.offsetTop - 250;
-      if (scrollPos >= top && scrollPos < top + section.offsetHeight) {
-        currentId = section.id;
-      }
-    });
-    navLinks.forEach(function (link) {
-      link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
-    });
-  }
-
-  window.addEventListener('scroll', updateActiveNavLink, { passive: true });
-  window.addEventListener('load', function () { setTimeout(updateActiveNavLink, 100); });
-
-  /* ================================================================
-     HASH SCROLL CORRECTION
-     ================================================================ */
-  window.addEventListener('load', function () {
-    if (window.location.hash) {
-      var target = document.querySelector(window.location.hash);
-      if (target) {
-        setTimeout(function () {
-          var offset = parseInt(getComputedStyle(target).scrollMarginTop) || 0;
-          window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
-        }, 100);
-      }
+    function initSwiper() {
+      swiperRoots.forEach(function (el) {
+        var configEl = el.querySelector('.swiper-config');
+        if (configEl) {
+          new Swiper(el, JSON.parse(configEl.textContent.trim()));
+        }
+      });
     }
-  });
 
-  /* ================================================================
-     PROJECT CARD HOVER (single system — no competing transforms)
-     ================================================================ */
-  runWhenDomReady(function () {
-    document.querySelectorAll('.project-card').forEach(function (card) {
-      card.addEventListener('mouseenter', function () {
-        this.style.transform = 'translateY(-8px)';
-      });
-      card.addEventListener('mouseleave', function () {
-        this.style.transform = '';
-      });
-    });
-  });
+    if (typeof Swiper !== 'undefined') {
+      initSwiper();
+      return;
+    }
 
-  /* ================================================================
-     FORM INPUT FOCUS EFFECT
-     ================================================================ */
-  runWhenDomReady(function () {
-    document.querySelectorAll('.form-control').forEach(function (input) {
-      input.addEventListener('focus', function () {
-        this.parentElement.style.transform = 'scale(1.02)';
-        this.parentElement.style.transition = 'transform 0.3s ease';
+    loadScript('assets/vendor/swiper/swiper-bundle.min.js')
+      .then(function () {
+        if (typeof Swiper !== 'undefined') initSwiper();
+      })
+      .catch(function () {
+        // Optional enhancement should fail silently.
       });
-      input.addEventListener('blur', function () {
-        this.parentElement.style.transform = '';
-      });
-    });
   });
 
   // Expose for external use
   window.PortfolioEffects = {
-    updateActiveNavLink: updateActiveNavLink
+    prefersReducedMotion: prefersReducedMotion
   };
 })();

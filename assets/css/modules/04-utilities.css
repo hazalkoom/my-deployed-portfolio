@@ -1,0 +1,252 @@
+/**
+ * Utility Classes
+ * Reusable utility classes for animations, effects, and common patterns
+ */
+
+/* ================================================================
+   ANIMATION UTILITIES
+   ================================================================ */
+
+.animate-fade-up {
+  animation: fadeInUp var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-fade-down {
+  animation: fadeInDown var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-slide-right {
+  animation: slideInRight var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-slide-left-bounce {
+  animation: slideInLeftBounce var(--duration-slow) var(--ease-out-back) forwards;
+}
+
+.animate-slide-right-bounce {
+  animation: slideInRightBounce var(--duration-slow) var(--ease-out-back) forwards;
+}
+
+.animate-bounce-in {
+  animation: bounceIn var(--duration-slow) var(--ease-out-back) forwards;
+}
+
+/* Initial states for animated elements */
+[data-animate] {
+  opacity: 0;
+}
+
+[data-animate].animate-in {
+  opacity: 1;
+}
+
+/* ================================================================
+   STAGGER DELAY UTILITIES
+   ================================================================ */
+
+.stagger-1 { animation-delay: calc(var(--stagger-base) * 1); }
+.stagger-2 { animation-delay: calc(var(--stagger-base) * 2); }
+.stagger-3 { animation-delay: calc(var(--stagger-base) * 3); }
+.stagger-4 { animation-delay: calc(var(--stagger-base) * 4); }
+.stagger-5 { animation-delay: calc(var(--stagger-base) * 5); }
+.stagger-6 { animation-delay: calc(var(--stagger-base) * 6); }
+.stagger-7 { animation-delay: calc(var(--stagger-base) * 7); }
+.stagger-8 { animation-delay: calc(var(--stagger-base) * 8); }
+.stagger-9 { animation-delay: calc(var(--stagger-base) * 9); }
+.stagger-10 { animation-delay: calc(var(--stagger-base) * 10); }
+
+/* ================================================================
+   GLASSMORPHISM
+   ================================================================ */
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.glass-strong {
+  background: rgba(26, 31, 53, 0.8);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================================
+   GRADIENT TEXT
+   ================================================================ */
+
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-secondary {
+  background: var(--gradient-secondary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-cool {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ================================================================
+   HOVER EFFECTS
+   ================================================================ */
+
+.hover-lift {
+  transition: transform var(--duration-normal) var(--ease-out-expo),
+              box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-glow {
+  transition: box-shadow var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+.hover-scale {
+  transition: transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-brightness {
+  transition: filter var(--duration-normal) var(--ease-out-expo);
+}
+
+.hover-brightness:hover {
+  filter: brightness(1.2);
+}
+
+/* ================================================================
+   MAGNETIC BUTTON BASE
+   ================================================================ */
+
+.magnetic {
+  transition: transform var(--duration-fast) var(--ease-out-expo);
+}
+
+/* ================================================================
+   FOCUS VISIBLE ENHANCEMENT
+   ================================================================ */
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+}
+
+/* ================================================================
+   SCROLL PROGRESS
+   ================================================================ */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  z-index: 9999;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ================================================================
+   PULSE ANIMATIONS
+   ================================================================ */
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.pulse-glow-pink {
+  animation: pulseGlowPink 2s ease-in-out infinite;
+}
+
+/* ================================================================
+   FLOATING ANIMATION
+   ================================================================ */
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+}
+
+.float-rotate {
+  animation: floatRotate 8s ease-in-out infinite;
+}
+
+/* ================================================================
+   VISIBILITY UTILITIES
+   ================================================================ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ================================================================
+   TEXT UTILITIES
+   ================================================================ */
+
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* ================================================================
+   CONTAINMENT FOR PERFORMANCE
+   ================================================================ */
+
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-strict {
+  contain: strict;
+}

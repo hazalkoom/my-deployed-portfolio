@@ -68,10 +68,14 @@
         });
 
         if (response.ok || response.redirected) {
+          form.classList.add('form-success');
           showStatus('success', '\u2713 Thank you! Your message has been sent. I\u2019ll get back to you soon!');
           form.reset();
           lastSubmitTime = Date.now();
           retryCount = 0;
+          setTimeout(function () {
+            form.classList.remove('form-success');
+          }, 1800);
         } else {
           throw new Error('Server responded with ' + response.status);
         }
